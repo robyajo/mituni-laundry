@@ -226,12 +226,24 @@ export default function HomeHeader() {
             <div className="hidden md:block">
               <ModeToggle />
             </div>
-            <Button variant="ghost" asChild className="hidden md:inline-flex">
-              <Link href="/login">Masuk</Link>
-            </Button>
-            <Button asChild className="hidden md:inline-flex">
-              <Link href="/login">Daftar Sekarang</Link>
-            </Button>
+            {session ? (
+              <Button variant="ghost" asChild className="hidden md:inline-flex">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="hidden md:inline-flex"
+                >
+                  <Link href="/login">Masuk</Link>
+                </Button>
+                <Button asChild className="hidden md:inline-flex">
+                  <Link href="/login">Daftar Sekarang</Link>
+                </Button>
+              </>
+            )}
 
             {/* Mobile Menu */}
             <Sheet>
@@ -390,16 +402,24 @@ export default function HomeHeader() {
 
                 <div className="border-t pt-6 px-4">
                   <div className="grid gap-2">
-                    <Button asChild className="w-full">
-                      <Link href="/login">Daftar Sekarang</Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      asChild
-                      className="w-full bg-transparent"
-                    >
-                      <Link href="/login">Masuk</Link>
-                    </Button>
+                    {session ? (
+                      <Button asChild className="w-full">
+                        <Link href="/dashboard">Dashboard</Link>
+                      </Button>
+                    ) : (
+                      <>
+                        <Button asChild className="w-full">
+                          <Link href="/login">Daftar Sekarang</Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          asChild
+                          className="w-full bg-transparent"
+                        >
+                          <Link href="/login">Masuk</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between mt-6">
