@@ -95,6 +95,11 @@ export default function RootLayout({
           name="google-site-verification"
           content="Ybw1hEXy-qBtAMeMnxUNW9gvXr3yA_s46QYE5MSHMew"
         />
+        <meta property="og:image" content={siteConfig.ogImage} />
+        <meta property="og:title" content={siteConfig.name} />
+        <meta property="og:description" content={siteConfig.description} />
+        <meta property="og:type" content={siteConfig.type} />
+        <meta property="og:locale" content="id_ID" />
         {/* Theme Color Meta Tags */}
         <meta
           name="theme-color"
@@ -123,9 +128,8 @@ export default function RootLayout({
               "@type": "LocalBusiness",
               "@id": `${process.env.NEXT_PUBLIC_APP_URL}/#business`,
               name: siteConfig.name,
-              image: `${process.env.NEXT_PUBLIC_APP_URL}/assets/og.jpg`,
-              description:
-                "Layanan laundry premium dengan pickup & delivery gratis di Jakarta",
+              image: siteConfig.ogImage,
+              description: siteConfig.description,
               url: `${process.env.NEXT_PUBLIC_APP_URL}`,
               telephone: "+62-812-3456-7890",
               email: "info@laundrypro.id",
