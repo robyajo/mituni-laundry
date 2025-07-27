@@ -52,7 +52,7 @@ export const siteConfig: SiteConfig = {
   links: {
     github: "https://github.com/robyajo",
   },
-  ogImage: `${urlApp}/og.png`,
+  ogImage: `${urlApp}/og.jpg`,
   locale: "id_ID",
   type: "website",
   publishedTime: new Date().toISOString(),
