@@ -1,0 +1,78 @@
+{
+    "name": "LaundryPro - Layanan Laundry Premium",
+    "short_name": "LaundryPro",
+    "description": "Layanan laundry premium dengan pickup & delivery gratis",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2563eb",
+    "orientation": "portrait-primary",
+    "categories": ["business", "lifestyle"],
+    "lang": "id",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    "icons": [
+      {
+        "src": "/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "maskable any"
+      },
+      {
+        "src": "/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable any"
+      },
+      {
+        "src": "/apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ],
+    "screenshots": [
+      {
+        "src": "/screenshot-wide.png",
+        "sizes": "1280x720",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "LaundryPro Dashboard"
+      },
+      {
+        "src": "/screenshot-narrow.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+        "form_factor": "narrow",
+        "label": "LaundryPro Mobile"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "Pesan Laundry",
+        "short_name": "Pesan",
+        "description": "Pesan layanan laundry sekarang",
+        "url": "/login",
+        "icons": [
+          {
+            "src": "/shortcut-order.png",
+            "sizes": "96x96",
+            "type": "image/png"
+          }
+        ]
+      },
+      {
+        "name": "Cek Harga",
+        "short_name": "Harga",
+        "description": "Lihat daftar harga layanan",
+        "url": "/#harga",
+        "icons": [
+          {
+            "src": "/shortcut-price.png",
+            "sizes": "96x96",
+            "type": "image/png"
+          }
+        ]
+      }
+    ]
+  }
+  
