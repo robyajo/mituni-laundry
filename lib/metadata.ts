@@ -37,7 +37,7 @@ export function createMetadata(override: Metadata): Metadata {
       ...override.twitter,
     },
     verification: {
-      google: "eDMXm178KCsfOY_yF5vkey8N1DpmQWFWpZiTK9OC3Ro",
+      google: "Ybw1hEXy-qBtAMeMnxUNW9gvXr3yA_s46QYE5MSHMew",
     },
     other: {
       "msapplication-TileColor": "#ffffff",

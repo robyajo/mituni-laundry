@@ -91,7 +91,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-
+        <meta
+          name="google-site-verification"
+          content="Ybw1hEXy-qBtAMeMnxUNW9gvXr3yA_s46QYE5MSHMew"
+        />
         {/* Theme Color Meta Tags */}
         <meta
           name="theme-color"
@@ -110,10 +113,7 @@ export default function RootLayout({
         <meta name="geo.placename" content="Jakarta" />
         <meta name="geo.position" content="-6.2088;106.8456" />
         <meta name="ICBM" content="-6.2088, 106.8456" />
-        <meta
-          name="google-site-verification"
-          content="eDMXm178KCsfOY_yF5vkey8N1DpmQWFWpZiTK9OC3Ro"
-        />
+
         {/* Business Schema */}
         <script
           type="application/ld+json"

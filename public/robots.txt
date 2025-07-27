@@ -8,7 +8,7 @@ Disallow: /_next/
 Disallow: /static/
 
 # Sitemap
-Sitemap: https://laundrypro.id/sitemap.xml
+Sitemap: https://mituni.kasiak.web.id/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
