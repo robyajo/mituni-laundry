@@ -59,8 +59,4 @@ export const siteConfig: SiteConfig = {
   twitterCard: "summary_large_image",
 };
 
-export const menuConfig = [
-  { href: "/", label: "Beranda" },
-  { href: "/layanan", label: "Layanan" },
-  { href: "/about", label: "Tentang" },
-];
+
