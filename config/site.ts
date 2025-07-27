@@ -3,7 +3,7 @@ import { SiteConfig } from "@/types";
 // Environment Variables
 const nameApp = process.env.NEXT_PUBLIC_APP_NAME;
 const urlApp = process.env.NEXT_PUBLIC_APP_URL;
-
+export const runtime = "edge";
 export const siteConfig: SiteConfig = {
   name: `${nameApp}`,
   author: "Roby Ajo",
