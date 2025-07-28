@@ -2,6 +2,7 @@
 
 import {
   Archive,
+  Layers,
   Shirt,
   SoapDispenserDroplet,
   Store,
@@ -31,6 +32,28 @@ export function MainLayanan() {
         Layanan
       </SidebarGroupLabel>
       <SidebarMenu>
+        <SidebarMenuItem>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SidebarMenuButton
+                asChild
+                className={
+                  pathname === "/layanan/layanan"
+                    ? "active bg-sidebar-accent rounded-md text-foreground"
+                    : ""
+                }
+              >
+                <Link href="/layanan/layanan">
+                  <Layers />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    Layanan
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </TooltipTrigger>
+            <TooltipContent side="right">Layanan</TooltipContent>
+          </Tooltip>
+        </SidebarMenuItem>
         <SidebarMenuItem>
           <Tooltip>
             <TooltipTrigger asChild>
