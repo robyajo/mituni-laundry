@@ -26,7 +26,13 @@ export function MainMenu() {
     <SidebarGroup>
       <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden"></SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuItem>
+        <SidebarMenuItem
+          className={
+            pathname === "/dashboard"
+              ? "active bg-sidebar-accent rounded-md text-foreground"
+              : ""
+          }
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <SidebarMenuButton asChild>

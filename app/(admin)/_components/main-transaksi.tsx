@@ -25,7 +25,13 @@ export function MainTransaksi() {
         Transaksi
       </SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuItem>
+        <SidebarMenuItem
+          className={
+            pathname === "/transaksi"
+              ? "active bg-sidebar-accent rounded-md text-foreground"
+              : ""
+          }
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <SidebarMenuButton

@@ -25,7 +25,13 @@ export function MainSetting() {
         Setting
       </SidebarGroupLabel>
       <SidebarMenu>
-        <SidebarMenuItem>
+        <SidebarMenuItem
+          className={
+            pathname === "/setting/outlet"
+              ? "active bg-sidebar-accent rounded-md text-foreground"
+              : ""
+          }
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <SidebarMenuButton
@@ -47,7 +53,13 @@ export function MainSetting() {
             <TooltipContent side="right">Pengaturan Outlet</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
-        <SidebarMenuItem>
+        <SidebarMenuItem
+          className={
+            pathname === "/setting/membership"
+              ? "active bg-sidebar-accent rounded-md text-foreground"
+              : ""
+          }
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <SidebarMenuButton
