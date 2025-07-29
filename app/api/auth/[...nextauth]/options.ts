@@ -113,7 +113,7 @@ export const authOptions: AuthOptions = {
             {
               headers: {
                 "Content-Type": "application/json",
-                "x-mituni-key": process.env.MITUNI_API_KEY,
+                "x-mituni-key": process.env.NEXT_PUBLIC_MITUNI_API_KEY,
               },
             }
           );

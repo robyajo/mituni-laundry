@@ -23,7 +23,7 @@ export function MainMenu() {
   const pathname = usePathname();
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="py-0">
       <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden"></SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem

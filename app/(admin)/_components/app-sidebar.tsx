@@ -30,6 +30,13 @@ import { MainMenu } from "./main-menu";
 import { MainLayanan } from "./main-layanan";
 import { MainTransaksi } from "./main-transaksi";
 import { MainSetting } from "./main-setting";
+import Image from "next/image";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
 
 // This is sample data.
 const data = {
@@ -40,17 +47,17 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Outlet 1",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
     {
-      name: "Acme Corp.",
+      name: "Outlet 2",
       logo: AudioWaveform,
       plan: "Startup",
     },
     {
-      name: "Evil Corp.",
+      name: "Outlet 3",
       logo: Command,
       plan: "Free",
     },
@@ -69,7 +76,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className="h-auto justify-start gap-2 px-2 py-1.5"
+            >
+              <Image
+                src="/assets/logo.png"
+                alt="Logo"
+                width={24}
+                height={24}
+                className="size-8 rounded-lg object-contain"
+              />
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <h1 className="font-bold text-teal-600 dark:text-teal-400">
+                  Mituni Laundry
+                </h1>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <Separator />
         <TeamSwitcher teams={data.teams} />
+        <Separator />
       </SidebarHeader>
       <SidebarContent>
         <MainMenu />
@@ -78,7 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <MainSetting />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

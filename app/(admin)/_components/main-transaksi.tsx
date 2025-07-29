@@ -1,6 +1,6 @@
 "use client";
 
-import { ScanLine, ScanText } from "lucide-react";
+import { DatabaseBackup, ScanLine, ScanText } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -51,6 +51,34 @@ export function MainTransaksi() {
               </SidebarMenuButton>
             </TooltipTrigger>
             <TooltipContent side="right">Transaksi</TooltipContent>
+          </Tooltip>
+        </SidebarMenuItem>
+        <SidebarMenuItem
+          className={
+            pathname === "/transaksi"
+              ? "active bg-sidebar-accent rounded-md text-foreground"
+              : ""
+          }
+        >
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SidebarMenuButton
+                asChild
+                className={
+                  pathname === "/transaksi"
+                    ? "active bg-sidebar-accent rounded-md text-foreground"
+                    : ""
+                }
+              >
+                <Link href="/item-cucian">
+                  <DatabaseBackup />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    Data Transaksi
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </TooltipTrigger>
+            <TooltipContent side="right">Data Transaksi</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
       </SidebarMenu>

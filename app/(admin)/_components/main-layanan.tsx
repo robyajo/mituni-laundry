@@ -38,12 +38,12 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/layanan/layanan"
+                  pathname === "/services"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/layanan/layanan">
+                <Link href="/services">
                   <Layers />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Layanan
@@ -104,12 +104,12 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/layanan/parfum"
+                  pathname === "/perfume"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/item-cucian">
+                <Link href="/perfume">
                   <SoapDispenserDroplet />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Parfum
