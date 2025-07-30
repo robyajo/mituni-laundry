@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { DataTable } from "./table/data-table";
@@ -26,16 +26,9 @@ const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
 
 export default function ViewPageServices() {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    name: "",
-    unit: "",
-    price: "",
-    icon: null,
-  });
-  const [editingService, setEditingService] = React.useState(false);
-  const [editingServiceId, setEditingServiceId] = React.useState(null);
-  const [editingServiceData, setEditingServiceData] = React.useState(null);
+  const [currentService, setCurrentService] = React.useState<any>(null);
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
   const apiUrl = `${API_URL}/api/services`;
   const {
     data: apiResponse,
@@ -65,19 +58,33 @@ export default function ViewPageServices() {
     enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
   });
 
+  const handleEdit = (service: any) => {
+    setCurrentService(service);
+    setIsDialogOpen(true);
+  };
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
             <DialogTitle>
-              {editingService ? "Edit Layanan" : "Tambah Layanan Baru"}
+              {currentService ? "Edit Layanan" : "Tambah Layanan Baru"}
             </DialogTitle>
             <DialogDescription>
-              Isi informasi layanan laundry yang akan ditambahkan
+              {currentService
+                ? "Perbarui informasi layanan laundry"
+                : "Isi informasi layanan laundry yang akan ditambahkan"}
             </DialogDescription>
           </DialogHeader>
-          <FormServices />
+          <FormServices
+            refetch={() => refetchInfo()}
+            onSuccess={() => {
+              setIsDialogOpen(false);
+            }}
+            initialData={currentService}
+            id={currentService?.id}
+          />
         </DialogContent>
       </Dialog>
 
@@ -87,9 +94,15 @@ export default function ViewPageServices() {
             title={`Layana`}
             description="Data layan yang telah dibuat."
           />
-          <Button variant="default" onClick={() => setIsDialogOpen(true)}>
+          <Button
+            variant="default"
+            onClick={() => {
+              setCurrentService(null);
+              setIsDialogOpen(true);
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" />
-            {editingService ? "Edit Layanan" : "Tambah Layanan Baru"}
+            Tambah Layanan Baru
           </Button>
         </div>
         {errorInfo ? (
@@ -114,7 +127,12 @@ export default function ViewPageServices() {
           <DataTable
             searchKey="name"
             columns={columns}
-            data={apiResponse?.data ?? []}
+            data={
+              apiResponse?.data?.map((item: any) => ({
+                ...item,
+                onEdit: handleEdit,
+              })) ?? []
+            }
             isLoading={loadingInfo}
           />
         )}

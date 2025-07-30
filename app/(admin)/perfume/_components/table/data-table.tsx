@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 
 import {
   ColumnDef,
@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
   token?: string;
   urlFilter?: string;
   isLoading?: boolean;
+  onEdit?: (data: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,14 +47,60 @@ export function DataTable<TData, TValue>({
   searchKey,
   labelSearch,
   isLoading = false,
+  onEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
+  // Define a type for the cell props that includes onEdit
+  type CellWithEditProps = {
+    row: {
+      original: TData;
+    };
+  };
+
+  const enhancedColumns = useMemo(() => {
+    return columns.map((column) => {
+      // Only enhance the actions column if onEdit is provided
+      if (column.id === "actions" && onEdit) {
+        const originalCell = column.cell as
+          | ((props: CellWithEditProps) => React.ReactNode)
+          | undefined;
+
+        return {
+          ...column,
+          cell: (props: CellWithEditProps) => {
+            // Create a new props object with the onEdit handler
+            const enhancedProps = {
+              ...props,
+              row: {
+                ...props.row,
+                original: {
+                  ...props.row.original,
+                },
+              },
+            };
+
+            // Call the original cell renderer if it exists
+            let cell: React.ReactNode = null;
+            if (typeof originalCell === "function") {
+              cell = originalCell(enhancedProps);
+            }
+
+            return cell;
+          },
+        } as ColumnDef<TData, TValue>;
+      }
+
+      return column;
+    });
+  }, [columns, onEdit]);
+
   const table = useReactTable({
     data,
-    columns,
+    // @ts-ignore - Temporary ignore for enhanced columns
+    columns: enhancedColumns,
     state: {
       sorting,
       columnFilters,

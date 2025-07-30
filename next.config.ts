@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "api-mituni.tiaban.com",
       },
+      {
+        protocol: "https",
+        hostname: "apimituni.kasiak.web.id",
+      },
     ],
   },
 };

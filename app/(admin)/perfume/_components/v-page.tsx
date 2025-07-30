@@ -1,17 +1,12 @@
 "use client";
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 import { DataTable } from "./table/data-table";
 import { columns } from "./table/columns";
-import type { SchemaPerfume } from "./schema/schema-perfume";
 import { HeadingAdmin } from "../../_components/patrials/heading-admin";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
-
 import {
   Dialog,
   DialogContent,
@@ -20,166 +15,59 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import FormServices from "./form/form-perfume";
+import { usePerfumeData } from "./resource-api";
 
-// Pastikan variabel ENV sudah di-setup di .env.local
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
+type Perfume = {
+  id: string | number;
+  name_perfume: string;
+  [key: string]: any; // For any additional properties
+};
 
 export default function ViewPagePerfume() {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    name: "",
-    unit: "",
-    price: "",
-    icon: null,
-  });
-  const [editingService, setEditingService] = React.useState(false);
-  const [editingServiceId, setEditingServiceId] = React.useState<
-    string | number | null
-  >(null);
-  const [editingServiceData, setEditingServiceData] = React.useState<
-    Partial<SchemaPerfume> | undefined
-  >(undefined);
-  const { data: session } = useSession();
-  const apiUrl = `${API_URL}/api/perfume`;
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [currentPerfume, setCurrentPerfume] = useState<Perfume | null>(null);
+
   const {
     data: apiResponse,
     isLoading: loadingInfo,
     error: errorInfo,
-    isFetching: isFetchingInfo,
     refetch: refetchInfo,
-  } = useQuery<any>({
-    queryKey: ["perfume"],
-    queryFn: async () => {
-      const response = await axios.post(
-        apiUrl,
-        {
-          branch_id: session?.data?.outlet_id_active,
-          search: "",
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "x-mituni-key": `${MITUNI_API_KEY}`,
-            Authorization: `Bearer ${session?.accessToken}`,
-          },
-        }
-      );
-      return response.data;
-    },
-    enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
-  });
+  } = usePerfumeData();
 
-  // Handler untuk membuka dialog edit
-  const handleEdit = async (row: any) => {
-    setEditingService(true);
-    const id = row.original.id ?? null;
-    console.log("id", id);
-    setEditingServiceId(id);
-
-    // fetch detail dari API
-    if (id) {
-      try {
-        const detailRes = await axios.post(
-          `${API_URL}/api/perfume`, // Pastikan endpoint ini benar
-          {
-            branch_id: session?.data?.outlet_id_active,
-            search: id, // Gunakan id, bukan search
-          },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "x-mituni-key": `${MITUNI_API_KEY}`,
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
-        );
-
-        const detail = detailRes.data?.data;
-        console.log("detail response:", detail);
-
-        // Set data dengan benar
-        if (detail) {
-          setEditingServiceData({
-            name_perfume: detail.name_perfume ?? "",
-            // tambahkan field lain jika ada
-          });
-        } else {
-          // Jika tidak ada detail, gunakan data dari row
-          setEditingServiceData({
-            name_perfume: row.original.name_perfume ?? "",
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching detail:", err);
-        // Fallback ke data dari row jika API gagal
-        setEditingServiceData({
-          name_perfume: row.original.name_perfume ?? "",
-        });
-      }
-    } else {
-      // Jika tidak ada ID, gunakan data dari row
-      setEditingServiceData({
-        name_perfume: row.original.name_perfume ?? "",
-      });
-    }
-
-    // Buka dialog setelah data siap
-    setIsDialogOpen(true);
-  };
-
-  // Handler untuk buka tambah baru
   const handleAdd = () => {
-    setEditingService(false);
-    setEditingServiceId(null);
-    setEditingServiceData(undefined);
+    setCurrentPerfume(null);
     setIsDialogOpen(true);
   };
 
-  // Inject handler ke kolom tabel
-  const columnsWithActions = columns.map((col) => {
-    if (col.id === "actions") {
-      return {
-        ...col,
-        cell: ({ row }: any) => {
-          const CellComponent = require("./table/columns").CellComponent;
-          return (
-            <CellComponent
-              row={row}
-              onEdit={() => handleEdit(row)}
-              // onDelete={() => ...}
-            />
-          );
-        },
-      };
-    }
-    return col;
-  });
-  console.log("columnsWithActions", columnsWithActions);
+  const handleSuccess = () => {
+    setIsDialogOpen(false);
+    setCurrentPerfume(null);
+    refetchInfo();
+  };
+
+  const handleEdit = (perfume: Perfume) => {
+    setCurrentPerfume(perfume);
+    setIsDialogOpen(true);
+  };
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
             <DialogTitle>
-              {editingService ? "Edit Perfume" : "Tambah Perfume Baru"}
+              {currentPerfume ? "Edit Parfum" : "Tambah Parfum Baru"}
             </DialogTitle>
             <DialogDescription>
-              Isi informasi layanan laundry yang akan ditambahkan
+              {currentPerfume
+                ? "Ubah informasi parfum"
+                : "Isi informasi parfum yang akan ditambahkan"}
             </DialogDescription>
           </DialogHeader>
           <FormServices
             refetch={refetchInfo}
-            initialData={editingServiceData}
-            id={editingServiceId}
-            onSuccess={() => {
-              setIsDialogOpen(false);
-              setEditingService(false);
-              setEditingServiceId(null);
-              setEditingServiceData(undefined);
-            }}
+            onSuccess={handleSuccess}
+            initialData={currentPerfume || undefined}
           />
         </DialogContent>
       </Dialog>
@@ -187,17 +75,17 @@ export default function ViewPagePerfume() {
       <div className="space-y-6 lg:space-y-4">
         <div className="flex items-start justify-between">
           <HeadingAdmin
-            title={`Perfume`}
-            description="Data layan yang telah dibuat."
+            title="Perfume"
+            description="Data parfum yang telah dibuat."
           />
           <Button variant="default" onClick={handleAdd}>
             <Plus className="mr-2 h-4 w-4" />
-            {editingService ? "Edit Perfume" : "Tambah Perfume Baru"}
+            Tambah Parfum Baru
           </Button>
         </div>
         {errorInfo ? (
           <Alert variant="destructive">
-            <AlertCircleIcon />
+            <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>Oops! Terjadi Error!</AlertTitle>
             <AlertDescription>
               <p>
@@ -214,12 +102,16 @@ export default function ViewPagePerfume() {
             </AlertDescription>
           </Alert>
         ) : (
-          <DataTable
+          <DataTable<Perfume, unknown>
             searchKey="name_perfume"
             labelSearch="Nama Parfum"
-            columns={columnsWithActions}
-            data={apiResponse?.data ?? []}
+            columns={columns}
+            data={(apiResponse?.data ?? []).map((item: any) => ({
+              ...item,
+              onEdit: handleEdit,
+            }))}
             isLoading={loadingInfo}
+            onEdit={handleEdit}
           />
         )}
       </div>

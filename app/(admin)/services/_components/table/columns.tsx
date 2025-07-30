@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
@@ -13,14 +13,131 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { formatCurrencyIDR } from "@/utils/formatCurrency";
-export const CellComponent = ({ row }: any) => {
+import { toast } from "sonner";
+import axios from "@/lib/axios";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useQueryClient } from "@tanstack/react-query";
+import AlertDelete from "@/components/modal/alert-delete";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import FormServices from "../form/form-services";
+
+interface Service {
+  id: string | number;
+  name: string;
+  unit: string;
+  price: number;
+  description: string;
+  icon: string;
+  [key: string]: any;
+};
+
+interface CellComponentProps<TData> {
+  row: Row<TData>;
+  onEdit?: (data: TData) => void;
+  onSuccess?: () => void;
+  initialData?: TData;
+  id?: string | number;
+}
+export const CellComponent = ({
+  row,
+  onEdit,
+  onSuccess,
+  initialData,
+  id,
+}: CellComponentProps<Service>) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpenDelete, setIsDialogOpenDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+
+  const handleEdit = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDialogOpenDelete(true);
+  };
+
+  const handleDelete = async (service: Service) => {
+    setIsDeleting(true);
+
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/service/delete`,
+        {
+          branch_id: session?.data?.outlet_id_active,
+          id: service.id,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-mituni-key": process.env.NEXT_PUBLIC_MITUNI_API_KEY,
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Berhasil", {
+          description: response.data.message,
+        });
+        setIsDialogOpenDelete(false); // Tutup dialog setelah berhasil
+
+        queryClient.invalidateQueries({ queryKey: ["services"] });
+      } else {
+        throw new Error(response.data.message || "Gagal menghapus data");
+      }
+    } catch (error: any) {
+      console.error("Error deleting service:", error);
+      toast.error("Gagal", {
+        description:
+          error.response?.data?.message ||
+          "Terjadi kesalahan saat menghapus data",
+      });
+    } finally {
+      setIsDeleting(false); // Reset loading state di finally
+    }
+  };
+  // If there's no onEdit handler, render only the dropdown menu
+
   return (
     <>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+          <DialogHeader>
+            <DialogTitle>Edit Layanan</DialogTitle>
+            <DialogDescription>
+              Isi informasi layanan yang akan diupdate
+            </DialogDescription>
+          </DialogHeader>
+          <FormServices
+            refetch={() => {}}
+            onSuccess={() => {
+              setIsDialogOpen(false);
+            }}
+            initialData={row.original}
+            id={row.original.id}
+          />
+        </DialogContent>
+      </Dialog>
+      <AlertDelete
+        isOpen={isDialogOpenDelete}
+        onOpenChange={setIsDialogOpenDelete}
+        data={row.original}
+        isDeleting={isDeleting}
+        handleDelete={handleDelete}
+        title={`Data Layanan ${row.original.name_service}`}
+      />
       <div className="flex float-right px-4 ">
-        {/* <TooltipAction label='Edit'>
-          <Button variant="secondary" size="icon" className="h-8 w-8 p-0 text-end" onClick={handleOpen}><Edit /> </Button>
-        </TooltipAction> */}
-
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -30,11 +147,11 @@ export const CellComponent = ({ row }: any) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDeleteClick}>
               <Trash className="mr-2 h-4 w-4" />
               Hapus
             </DropdownMenuItem>
@@ -58,13 +175,13 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "icon_url",
     header: "Icon",
     cell: ({ row }) => (
-      <div className="flex items-center justify-center">
+      <div className="text-start ">
         <Image
           width={32}
           height={32}
           src={row.original.icon_url}
           alt={row.original.name}
-          className="w-8 h-8 object-contain rounded"
+          className="w-12 h-12 object-contain rounded"
           loading="lazy"
         />
       </div>
@@ -80,20 +197,6 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: "price",
     header: "Harga",
     cell: ({ row }) => {
-      // Format ke Rupiah Indonesia pakai util
-      // import { formatCurrencyIDR } from "@/utils/formatCurrency";
-      // (pastikan path sesuai alias/struktur project Anda)
-      //
-      // Jika error import, pastikan tsconfig.json sudah ada path alias @/ ke ./
-      //
-      // Untuk sementara, import manual:
-      // import { formatCurrencyIDR } from "../../../../utils/formatCurrency";
-      //
-      // Jika sudah setup alias:
-      // import { formatCurrencyIDR } from "@/utils/formatCurrency";
-      //
-      // Gunakan:
-      // return formatCurrencyIDR(row.original.price);
       return formatCurrencyIDR(row.original.price);
     },
   },
