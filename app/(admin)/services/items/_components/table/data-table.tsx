@@ -66,6 +66,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string;
+  labelSearch?: string;
   token?: string;
   urlFilter?: string;
   isLoading?: boolean;
@@ -75,6 +76,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
+  labelSearch,
   token,
   urlFilter,
   isLoading = false,
@@ -239,7 +241,7 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col items-center justify-between gap-2  w-full lg:grid lg:grid-cols-2 space-y-1 lg:y-4">
         {searchKey && (
           <Input
-            placeholder={`Cari ${searchKey}...`}
+            placeholder={`Cari ${labelSearch}...`}
             value={
               (table
                 .getColumn(searchKey as string)

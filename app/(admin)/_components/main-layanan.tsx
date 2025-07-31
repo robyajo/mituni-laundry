@@ -2,6 +2,7 @@
 
 import {
   Archive,
+  ChevronRight,
   Layers,
   Shirt,
   SoapDispenserDroplet,
@@ -15,7 +16,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import Link from "next/link";
 import {
   Tooltip,
@@ -23,6 +32,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { usePathname } from "next/navigation";
+import { CollapsibleMenu } from "./collapsible-menu";
 
 export function MainLayanan() {
   const pathname = usePathname();
@@ -38,12 +48,12 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/services"
+                  pathname === "/services/items"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/services">
+                <Link href="/services/items">
                   <Layers />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Layanan
@@ -60,20 +70,20 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/layanan/item-cucian"
+                  pathname === "/services/cucian"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/item-cucian">
+                <Link href="/services/cucian">
                   <Shirt />
                   <span className="group-data-[collapsible=icon]:hidden">
-                    Item Cucian
+                    Cucian
                   </span>
                 </Link>
               </SidebarMenuButton>
             </TooltipTrigger>
-            <TooltipContent side="right">Item Cucian</TooltipContent>
+            <TooltipContent side="right">Cucian</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
         <SidebarMenuItem>
@@ -82,20 +92,20 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/layanan/rak-penyimpanan"
+                  pathname === "/services/rak"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/item-cucian">
+                <Link href="/services/rak">
                   <Archive />
                   <span className="group-data-[collapsible=icon]:hidden">
-                    Rak Penyimpanan
+                    Rak
                   </span>
                 </Link>
               </SidebarMenuButton>
             </TooltipTrigger>
-            <TooltipContent side="right">Rak Penyimpanan</TooltipContent>
+            <TooltipContent side="right">Rak</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
         <SidebarMenuItem>
@@ -104,12 +114,12 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/perfume"
+                  pathname === "/services/perfume"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/perfume">
+                <Link href="/services/perfume">
                   <SoapDispenserDroplet />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Parfum
@@ -120,50 +130,43 @@ export function MainLayanan() {
             <TooltipContent side="right">Parfum</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
-        <SidebarMenuItem>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SidebarMenuButton
-                asChild
-                className={
-                  pathname === "/layanan/pelanggan"
-                    ? "active bg-sidebar-accent rounded-md text-foreground"
-                    : ""
-                }
-              >
-                <Link href="/item-cucian">
-                  <Users />
-                  <span className="group-data-[collapsible=icon]:hidden">
-                    Pelanggan
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </TooltipTrigger>
-            <TooltipContent side="right">Pelanggan</TooltipContent>
-          </Tooltip>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <SidebarMenuButton
-                asChild
-                className={
-                  pathname === "/layanan/outlet"
-                    ? "active bg-sidebar-accent rounded-md text-foreground"
-                    : ""
-                }
-              >
-                <Link href="/item-cucian">
-                  <Store />
-                  <span className="group-data-[collapsible=icon]:hidden">
-                    Outlet
-                  </span>
-                </Link>
-              </SidebarMenuButton>
-            </TooltipTrigger>
-            <TooltipContent side="right">Outlet</TooltipContent>
-          </Tooltip>
-        </SidebarMenuItem>
+
+        <CollapsibleMenu
+          item={{
+            title: "Pelanggan",
+            url: "/services/customer",
+            icon: Users,
+            isActive: pathname === "/services/customer",
+            items: [
+              {
+                title: "List Pelanggan",
+                url: "/services/customer",
+              },
+              {
+                title: "Tambah Pelanggan",
+                url: "/services/customer/tambah",
+              },
+            ],
+          }}
+        />
+        <CollapsibleMenu
+          item={{
+            title: "Outlet",
+            url: "/services/outlet",
+            icon: Store,
+            isActive: pathname === "/services/outlet",
+            items: [
+              {
+                title: "List Outlet",
+                url: "/services/outlet",
+              },
+              {
+                title: "Tambah Outlet",
+                url: "/services/outlet/tambah",
+              },
+            ],
+          }}
+        />
       </SidebarMenu>
     </SidebarGroup>
   );

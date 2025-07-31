@@ -13,6 +13,7 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  Store,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -45,6 +46,43 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
+  navMain: [
+    {
+      title: "Outlet",
+      url: "#",
+      icon: Store,
+      isActive: true,
+      items: [
+        {
+          title: "List Outlet",
+          url: "#",
+        },
+        {
+          title: "Tambah Outlet",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Models",
+      url: "#",
+      icon: Bot,
+      items: [
+        {
+          title: "Genesis",
+          url: "#",
+        },
+        {
+          title: "Explorer",
+          url: "#",
+        },
+        {
+          title: "Quantum",
+          url: "#",
+        },
+      ],
+    },
+  ],
   teams: [
     {
       name: "Outlet 1",
@@ -102,6 +140,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Separator />
       </SidebarHeader>
       <SidebarContent>
+        {/* <NavMain items={data.navMain} /> */}
         <MainMenu />
         <MainLayanan />
         <MainTransaksi />

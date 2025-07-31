@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { DataTable } from "./table/data-table";
 import { columns } from "./table/columns";
-import { HeadingAdmin } from "../../_components/patrials/heading-admin";
+import { HeadingAdmin } from "../../../_components/patrials/heading-admin";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -68,13 +68,9 @@ export default function ViewPageServices() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
-            <DialogTitle>
-              {currentService ? "Edit Layanan" : "Tambah Layanan Baru"}
-            </DialogTitle>
+            <DialogTitle>Tambah Layanan Baru</DialogTitle>
             <DialogDescription>
-              {currentService
-                ? "Perbarui informasi layanan laundry"
-                : "Isi informasi layanan laundry yang akan ditambahkan"}
+              Isi informasi layanan laundry yang akan ditambahkan
             </DialogDescription>
           </DialogHeader>
           <FormServices
@@ -82,8 +78,7 @@ export default function ViewPageServices() {
             onSuccess={() => {
               setIsDialogOpen(false);
             }}
-            initialData={currentService}
-            id={currentService?.id}
+            mode="store"
           />
         </DialogContent>
       </Dialog>
@@ -126,6 +121,7 @@ export default function ViewPageServices() {
         ) : (
           <DataTable
             searchKey="name"
+            labelSearch="Nama Layanan"
             columns={columns}
             data={
               apiResponse?.data?.map((item: any) => ({

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { DataTable } from "./table/data-table";
 import { columns } from "./table/columns";
-import { HeadingAdmin } from "../../_components/patrials/heading-admin";
+import { HeadingAdmin } from "../../../_components/patrials/heading-admin";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

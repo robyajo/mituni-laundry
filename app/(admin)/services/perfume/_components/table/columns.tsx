@@ -11,14 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { formatCurrencyIDR } from "@/utils/formatCurrency";
-import { toast } from "sonner";
-import axios from "@/lib/axios";
+
 import { useState } from "react";
-import { useSession } from "next-auth/react";
-import { useQueryClient } from "@tanstack/react-query";
-import AlertDelete from "@/components/modal/alert-delete";
 import {
   Dialog,
   DialogContent,
@@ -26,32 +20,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import FormServices from "../form/form-services";
+import FormPerfume from "../form/form-perfume";
+import axios from "@/lib/axios";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import AlertDelete from "@/components/modal/alert-delete";
 
-interface Service {
+type Perfume = {
   id: string | number;
-  name: string;
-  unit: string;
-  price: number;
-  description: string;
-  icon: string;
+  name_perfume: string;
   [key: string]: any;
 };
 
 interface CellComponentProps<TData> {
   row: Row<TData>;
   onEdit?: (data: TData) => void;
-  onSuccess?: () => void;
-  initialData?: TData;
-  id?: string | number;
 }
-export const CellComponent = ({
-  row,
-  onEdit,
-  onSuccess,
-  initialData,
-  id,
-}: CellComponentProps<Service>) => {
+
+export function CellComponent<TData extends Perfume>(
+  props: CellComponentProps<TData>
+) {
+  const { row, onEdit } = props;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogOpenDelete, setIsDialogOpenDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -59,22 +49,25 @@ export const CellComponent = ({
   const queryClient = useQueryClient();
 
   const handleEdit = () => {
-    setIsDialogOpen(true);
+    if (onEdit) {
+      onEdit(row.original);
+      setIsDialogOpen(true);
+    }
   };
 
   const handleDeleteClick = () => {
     setIsDialogOpenDelete(true);
   };
 
-  const handleDelete = async (service: Service) => {
+  const handleDelete = async (perfume: Perfume) => {
     setIsDeleting(true);
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/service/delete`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/perfume/delete`,
         {
           branch_id: session?.data?.outlet_id_active,
-          id: service.id,
+          id: perfume.id,
         },
         {
           headers: {
@@ -92,12 +85,12 @@ export const CellComponent = ({
         });
         setIsDialogOpenDelete(false); // Tutup dialog setelah berhasil
 
-        queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["perfume"] });
       } else {
         throw new Error(response.data.message || "Gagal menghapus data");
       }
     } catch (error: any) {
-      console.error("Error deleting service:", error);
+      console.error("Error deleting perfume:", error);
       toast.error("Gagal", {
         description:
           error.response?.data?.message ||
@@ -108,18 +101,43 @@ export const CellComponent = ({
     }
   };
   // If there's no onEdit handler, render only the dropdown menu
+  if (!onEdit) {
+    return (
+      <div className="flex float-right px-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+            <DropdownMenuItem onClick={handleEdit}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDeleteClick}>
+              <Trash className="mr-2 h-4 w-4" />
+              Hapus
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
 
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
-            <DialogTitle>Edit Layanan</DialogTitle>
+            <DialogTitle>Edit Parfum</DialogTitle>
             <DialogDescription>
-              Isi informasi layanan yang akan diupdate
+              Isi informasi parfum yang akan diupdate
             </DialogDescription>
           </DialogHeader>
-          <FormServices
+          <FormPerfume
             refetch={() => {}}
             onSuccess={() => {
               setIsDialogOpen(false);
@@ -129,16 +147,18 @@ export const CellComponent = ({
           />
         </DialogContent>
       </Dialog>
+
       <AlertDelete
         isOpen={isDialogOpenDelete}
         onOpenChange={setIsDialogOpenDelete}
         data={row.original}
         isDeleting={isDeleting}
         handleDelete={handleDelete}
-        title={`Data Layanan ${row.original.name_service}`}
+        title={`Data Parfum ${row.original.name_perfume}`}
       />
-      <div className="flex float-right px-4 ">
-        <DropdownMenu modal={false}>
+
+      <div className="flex float-right px-4">
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
@@ -160,56 +180,25 @@ export const CellComponent = ({
       </div>
     </>
   );
-};
+}
 
 // Mendefinisikan kolom-kolom tabel
-export const columns: ColumnDef<any>[] = [
+export const columns: ColumnDef<Perfume>[] = [
   {
     id: "no_urut",
     header: "No",
     cell: ({ row }) => {
-      return row.index + 1;
+      return <div className="text-start">{row.index + 1}</div>;
     },
   },
   {
-    accessorKey: "icon_url",
-    header: "Icon",
-    cell: ({ row }) => (
-      <div className="text-start ">
-        <Image
-          width={32}
-          height={32}
-          src={row.original.icon_url}
-          alt={row.original.name}
-          className="w-12 h-12 object-contain rounded"
-          loading="lazy"
-        />
-      </div>
+    accessorKey: "name_perfume",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nama Parfum" />
     ),
   },
   {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Nama Layanan" />;
-    },
-  },
-  {
-    accessorKey: "price",
-    header: "Harga",
-    cell: ({ row }) => {
-      return formatCurrencyIDR(row.original.price);
-    },
-  },
-
-  {
-    accessorKey: "description",
-    header: "Deskripsi",
-    cell: ({ row }) => {
-      return row.original.description;
-    },
-  },
-  {
     id: "actions",
-    cell: ({ row }) => <CellComponent row={row} />,
+    cell: ({ row }) => <CellComponent row={row} onEdit={row.original.onEdit} />,
   },
 ];

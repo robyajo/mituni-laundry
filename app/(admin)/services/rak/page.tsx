@@ -1,18 +1,18 @@
-import PageConponentsAdmin from "../_components/page-components";
+import PageConponentsAdmin from "../../_components/page-components";
 import { BreadcrumbType } from "@/types";
 import { Metadata } from "next";
-import ViewPageServices from "./_components/v-page";
+import ViewPageRak from "./_components/v-page";
 
 export const metadata: Metadata = {
-  title: "Services",
-  description: "Services",
+  title: "Rak",
+  description: "Rak",
 };
 
 export default async function Page() {
   const breadcrumbs: BreadcrumbType[] = [
     {
-      label: "Services",
-      href: "/services",
+      label: "Rak",
+      href: "/rak",
       isCurrent: true,
     },
   ];
@@ -20,7 +20,7 @@ export default async function Page() {
     <>
       <PageConponentsAdmin breadcrumb={breadcrumbs}>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <ViewPageServices />
+          <ViewPageRak />
         </div>
       </PageConponentsAdmin>
     </>
