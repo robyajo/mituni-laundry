@@ -34,6 +34,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ModeToggle } from "@/components/mode-toggle";
 import LoginForm from "./form/form-login";
+import ButtonGoogle from "./form/button-google";
 
 export default function PageLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -153,7 +154,7 @@ export default function PageLogin() {
                   </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleRegister}>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 max-w-md mx-auto">
                     {error && (
                       <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
@@ -317,27 +318,8 @@ export default function PageLogin() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <Button variant="outline" type="button">
-                        <Image
-                          src="/placeholder.svg?height=20&width=20&text=G"
-                          alt="Google"
-                          width={20}
-                          height={20}
-                          className="mr-2"
-                        />
-                        Google
-                      </Button>
-                      <Button variant="outline" type="button">
-                        <Image
-                          src="/placeholder.svg?height=20&width=20&text=F"
-                          alt="Facebook"
-                          width={20}
-                          height={20}
-                          className="mr-2"
-                        />
-                        Facebook
-                      </Button>
+                    <div className="flex items-center space-x-2">
+                      <ButtonGoogle />
                     </div>
                   </CardFooter>
                 </form>
