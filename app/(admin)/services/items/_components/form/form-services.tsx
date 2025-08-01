@@ -32,6 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useServicesUnitData } from "../resource-api";
 import { DebugForm } from "@/components/debug-form";
 import { CurrencyInput } from "@/components/form/input-currency";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
 interface FormServicesProps {
   refetch: () => void;
@@ -56,6 +57,7 @@ export default function FormServices({
   const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const { outlet_id_active } = useActiveOutlet();
 
   type FormValues = {
     id: string;
@@ -80,7 +82,7 @@ export default function FormServices({
   });
 
   const { data: apiResponseUnit } = useServicesUnitData();
-  console.log("initialData", initialData);
+  // console.log("initialData", initialData);
   // Handle form submission with proper typing
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
@@ -107,8 +109,8 @@ export default function FormServices({
       if (iconFile) {
         formData.append("icon", iconFile);
       }
-      if (session?.data?.outlet_id_active) {
-        formData.append("branch_id", String(session.data.outlet_id_active));
+      if (outlet_id_active) {
+        formData.append("branch_id", String(outlet_id_active));
       }
 
       const result = await axios.post(

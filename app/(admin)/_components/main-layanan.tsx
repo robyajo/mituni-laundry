@@ -70,20 +70,20 @@ export function MainLayanan() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/services/cucian"
+                  pathname === "/services/dry"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/services/cucian">
+                <Link href="/services/dry">
                   <Shirt />
                   <span className="group-data-[collapsible=icon]:hidden">
-                    Cucian
+                    Dry
                   </span>
                 </Link>
               </SidebarMenuButton>
             </TooltipTrigger>
-            <TooltipContent side="right">Cucian</TooltipContent>
+            <TooltipContent side="right">Dry</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
         <SidebarMenuItem>

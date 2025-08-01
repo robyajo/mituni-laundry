@@ -120,16 +120,18 @@ export const authOptions: AuthOptions = {
 
           if (res.headers["content-type"]?.includes("application/json")) {
             const response = res.data;
-
+            
             if (response.success === true && response.data?.user) {
+              const outletId = response.data.outlet_id_active;
+             
               return {
                 ...response.data.user,
                 outlet_id_active: response.data.outlet_id_active,
                 accessToken: response.data.token,
                 tokenType: response.data.token_type ?? "Bearer",
               };
+            
             } else if (response.status === "error" && response.errors) {
-              // Format the validation errors into a single string
               const errorMessage = response.errors.join(", ");
               throw new Error(`[${errorMessage}]`);
             } else {

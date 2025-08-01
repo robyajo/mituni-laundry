@@ -30,6 +30,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useOutletStore } from "@/store/useOutletStore";
 import {
   AlertCircle,
   AlertCircleIcon,
@@ -51,7 +52,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const setAuthData = useOutletStore((state) => state.setAuthData);
   const form = useForm<AuthLoginValues>({
     resolver: zodResolver(authLoginSchema),
     defaultValues: {
@@ -76,6 +77,17 @@ export default function LoginForm() {
         toast.error(result.error);
         setError(result.error);
       } else {
+        // Get the session data which contains the outlet_id_active
+        const sessionResponse = await fetch('/api/auth/session');
+        const sessionData = await sessionResponse.json();
+        
+        if (sessionData?.data?.outlet_id_active) {
+          // Update the Zustand store with the outlet_id_active
+          setAuthData({
+            outlet_id_active: sessionData.data.outlet_id_active.toString()
+          });
+        }
+        
         toast.success("Login successful");
         router.push("/dashboard");
         router.refresh();
@@ -128,64 +140,67 @@ export default function LoginForm() {
           </div>
 
           <div className="space-y-2">
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center">
-                  <Label>
-                    Password <span className="text-red-500">*</span>
-                  </Label>
-                  <Link
-                    href="#"
-                    className="ml-auto text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <FormControl>
-                <div className="space-y-2">
-               
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    className="pl-9 sm:pl-10 pr-10 h-11 sm:h-12 text-sm sm:text-base"
-                    disabled={isLoading}
-                    required
-                    {...field}  
-                  />
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-gray-400" />
-                          ) : (
-                            <Eye className="h-4 w-4 text-gray-400" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{showPassword ? "Hide password" : "Show password"}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center">
+                    <Label>
+                      Password <span className="text-red-500">*</span>
+                    </Label>
+                    <Link
+                      href="#"
+                      className="ml-auto text-sm underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </Link>
+                  </div>
+                  <FormControl>
+                    <div className="space-y-2">
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          className="pl-9 sm:pl-10 pr-10 h-11 sm:h-12 text-sm sm:text-base"
+                          disabled={isLoading}
+                          required
+                          {...field}
+                        />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="h-4 w-4 text-gray-400" />
+                                ) : (
+                                  <Eye className="h-4 w-4 text-gray-400" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                {showPassword
+                                  ? "Hide password"
+                                  : "Show password"}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="flex items-center justify-between space-y-4">

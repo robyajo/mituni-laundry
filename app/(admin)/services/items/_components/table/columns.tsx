@@ -27,6 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import FormServices from "../form/form-services";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
 interface Service {
   id: string | number;
@@ -51,6 +52,7 @@ export const CellComponent = ({ row }: CellComponentProps<Service>) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const { outlet_id_active } = useActiveOutlet();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
   const handleEdit = () => {
@@ -68,7 +70,7 @@ export const CellComponent = ({ row }: CellComponentProps<Service>) => {
       const response = await axios.post(
         `${API_URL}/api/services/delete`,
         {
-          branch_id: session?.data?.outlet_id_active,
+          branch_id: outlet_id_active,
           id: service.id,
         },
         {
@@ -92,7 +94,7 @@ export const CellComponent = ({ row }: CellComponentProps<Service>) => {
         throw new Error(response.data.message || "Gagal menghapus data");
       }
     } catch (error: any) {
-      console.error("Error deleting service:", error);
+      // console.error("Error deleting service:", error);
       toast.error("Gagal", {
         description:
           error.response?.data?.message ||

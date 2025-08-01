@@ -129,7 +129,7 @@ export function CellComponent<TData extends Perfume>(
 
   return (
     <>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
             <DialogTitle>Edit Parfum</DialogTitle>
@@ -143,10 +143,10 @@ export function CellComponent<TData extends Perfume>(
               setIsDialogOpen(false);
             }}
             initialData={row.original}
-            id={row.original.id}
+            mode="update"
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       <AlertDelete
         isOpen={isDialogOpenDelete}

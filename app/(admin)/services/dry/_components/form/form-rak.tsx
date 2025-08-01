@@ -19,42 +19,44 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { SchemaPerfume } from "../schema/schema-perfume";
+import { SchemaRak, schemaRak } from "../schema/schema-dry";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { schemaPerfume } from "../schema/schema-perfume";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
+import DebugForm from "@/components/debug-form";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
-interface FormPerfumeProps {
+interface FormRakProps {
   refetch: () => void;
-  initialData?: Partial<SchemaPerfume>;
-  id?: string | number | null;
+  initialData?: Partial<any>;
+  mode: "store" | "update";
   onSuccess?: () => void;
 }
 
-export default function FormPerfume({
+export default function FormRak({
   refetch,
   initialData,
-  id,
+  mode,
   onSuccess,
-}: FormPerfumeProps) {
+}: FormRakProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
   const { data: session } = useSession();
+  const { outlet_id_active } = useActiveOutlet();
 
-  const form = useForm<SchemaPerfume>({
-    resolver: zodResolver(schemaPerfume),
+  const form = useForm<SchemaRak & { id?: string | number }>({
+    resolver: zodResolver(schemaRak),
     defaultValues: {
-      name_perfume: "",
-      ...initialData
+      name_item: initialData?.name_item || "",
+      id: initialData?.id,
     },
   });
 
@@ -64,48 +66,33 @@ export default function FormPerfume({
       form.reset(initialData);
     }
   }, [initialData, form]);
-
-  const onSubmit = async (data: SchemaPerfume) => {
+  const onSubmit = async (data: SchemaRak & { id?: string | number }) => {
     setIsLoading(true);
     setError(null);
     try {
-      let result;
-      if (id) {
-        // Update
-        result = await axios.post(
-          `${API_URL}/api/perfume/update`,
-          {
-            branch_id: session?.data?.outlet_id_active,
-            name_perfume: data.name_perfume,
-            id: id,
-          },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "x-mituni-key": `${MITUNI_API_KEY}`,
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
-        );
-      } else {
-        // Tambah
-        result = await axios.post(
-          `${API_URL}/api/perfume/store`,
-          {
-            branch_id: session?.data?.outlet_id_active,
-            name_perfume: data.name_perfume,
-          },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "x-mituni-key": `${MITUNI_API_KEY}`,
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
-        );
+      const formData = new FormData();
+      formData.append("id", String(initialData?.id || ""));
+      formData.append("name_item", data.name_item.trim());
+      // Always include id in the request data, but only if it exists
+      if (data.id) {
+        formData.append("id", String(data.id));
       }
+      if (outlet_id_active) {
+        formData.append("branch_id", String(outlet_id_active));
+      }
+
+      const result = await axios.post(
+        `${API_URL}/api/item-dry/${mode === "update" ? "update" : "store"}`,
+        formData,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-mituni-key": `${MITUNI_API_KEY}`,
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
       if (result?.data?.success === false) {
         // Ambil error detail dari API
         let apiError =
@@ -118,14 +105,16 @@ export default function FormPerfume({
         setError(apiError);
       } else {
         toast.success(
-          id ? "Data parfum berhasil diupdate" : "Data parfum berhasil disimpan"
+          mode === "update"
+            ? "Data dry berhasil diupdate"
+            : "Data dry berhasil disimpan"
         );
         refetch();
         if (onSuccess) onSuccess();
       }
-    } catch (error) {
-      toast.error("Terjadi kesalahan. Silakan coba lagi.");
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+    } catch (error: any) {
+      toast.error(error.response?.data?.errors || "Terjadi kesalahan");
+      setError(error.response?.data?.errors || "Terjadi kesalahan");
     } finally {
       setIsLoading(false);
     }
@@ -146,15 +135,15 @@ export default function FormPerfume({
         <div className="grid gap-4 py-4">
           <FormField
             control={form.control}
-            name="name_perfume"
+            name="name_item"
             render={({ field }) => (
               <FormItem className="space-y-2">
                 <FormLabel>
-                  Nama Parfum <span className="text-red-500">*</span>
+                  Nama Dry <span className="text-red-500">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Masukkan nama parfum"
+                    placeholder="Masukkan nama dry"
                     {...field}
                     disabled={isLoading}
                   />
@@ -164,6 +153,16 @@ export default function FormPerfume({
             )}
           />
         </div>
+        <DebugForm
+          form={form}
+          mode={mode}
+          extraInfo={{
+            branch_id: session?.data?.outlet_id_active,
+            isSubmitting: isLoading,
+            isValid: form.formState.isValid,
+            errors: form.formState.errors,
+          }}
+        />
         <DialogFooter>
           <Button type="submit" disabled={isLoading}>
             Simpan

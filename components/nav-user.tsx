@@ -52,16 +52,16 @@ export function NavUser({
           },
         }
       );
-      console.log("Logout successful");
+      // console.log("Logout successful");
     } catch (error) {
-      console.error("Error logging out:", error);
+      // console.error("Error logging out:", error);
     }
 
     try {
       await signOut({ callbackUrl: "/", redirect: true }); // Ensure redirect happens
       toast.success("Logout successful. Redirecting...");
     } catch (error) {
-      console.error("Error during NextAuth signOut:", error);
+      // console.error("Error during NextAuth signOut:", error);
       toast.error("Logout failed. Please try again.");
     }
   };

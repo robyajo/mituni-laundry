@@ -14,40 +14,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import FormServices from "./form/form-perfume";
-import { usePerfumeData } from "./resource-api";
+import FormRak from "./form/form-rak";
+import { useDryData } from "./resource-api";
 
-type Perfume = {
+type Dry = {
   id: string | number;
-  name_perfume: string;
+  name_item: string;
   [key: string]: any; // For any additional properties
 };
 
-export default function ViewPagePerfume() {
+export default function ViewPageDry() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentPerfume, setCurrentPerfume] = useState<Perfume | null>(null);
+  const [currentDry, setCurrentDry] = useState<Dry | null>(null);
 
   const {
     data: apiResponse,
     isLoading: loadingInfo,
     error: errorInfo,
     refetch: refetchInfo,
-  } = usePerfumeData();
+  } = useDryData();
 
   const handleAdd = () => {
-    setCurrentPerfume(null);
+    setCurrentDry(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (dry: Dry) => {
+    setCurrentDry(dry);
     setIsDialogOpen(true);
   };
 
   const handleSuccess = () => {
     setIsDialogOpen(false);
-    setCurrentPerfume(null);
+    setCurrentDry(null);
     refetchInfo();
-  };
-
-  const handleEdit = (perfume: Perfume) => {
-    setCurrentPerfume(perfume);
-    setIsDialogOpen(true);
   };
 
   return (
@@ -56,31 +56,29 @@ export default function ViewPagePerfume() {
         <DialogContent className="sm:max-w-[625px]">
           <DialogHeader>
             <DialogTitle>
-              {currentPerfume ? "Edit Parfum" : "Tambah Parfum Baru"}
+              {currentDry ? "Edit Dry" : "Tambah Dry Baru"}
             </DialogTitle>
             <DialogDescription>
-              {currentPerfume
-                ? "Ubah informasi parfum"
-                : "Isi informasi parfum yang akan ditambahkan"}
+              {currentDry
+                ? "Ubah informasi dry"
+                : "Isi informasi dry yang akan ditambahkan"}
             </DialogDescription>
           </DialogHeader>
-          <FormServices
+          <FormRak
             refetch={refetchInfo}
             onSuccess={handleSuccess}
-            initialData={currentPerfume || undefined}
+            initialData={currentDry || undefined}
+            mode={currentDry ? "update" : "store"}
           />
         </DialogContent>
       </Dialog>
 
       <div className="space-y-6 lg:space-y-4">
         <div className="flex items-start justify-between">
-          <HeadingAdmin
-            title="Perfume"
-            description="Data parfum yang telah dibuat."
-          />
+          <HeadingAdmin title="Dry" description="Data dry yang telah dibuat." />
           <Button variant="default" onClick={handleAdd}>
             <Plus className="mr-2 h-4 w-4" />
-            Tambah Parfum Baru
+            Tambah Dry Baru
           </Button>
         </div>
         {errorInfo ? (
@@ -102,16 +100,15 @@ export default function ViewPagePerfume() {
             </AlertDescription>
           </Alert>
         ) : (
-          <DataTable<Perfume, unknown>
-            searchKey="name_perfume"
-            labelSearch="Nama Parfum"
+          <DataTable<Dry, unknown>
+            searchKey="name_item"
+            labelSearch="Nama Dry"
             columns={columns}
             data={(apiResponse?.data ?? []).map((item: any) => ({
               ...item,
               onEdit: handleEdit,
             }))}
             isLoading={loadingInfo}
-            onEdit={handleEdit}
           />
         )}
       </div>

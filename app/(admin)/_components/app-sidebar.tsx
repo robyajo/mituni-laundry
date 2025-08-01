@@ -38,6 +38,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+import { OutletSwitcher } from "./outlet-switcher";
 
 // This is sample data.
 const data = {
@@ -136,7 +137,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
         <Separator />
-        <TeamSwitcher teams={data.teams} />
+        {/* <TeamSwitcher teams={data.teams} /> */}
+        <OutletSwitcher />
         <Separator />
       </SidebarHeader>
       <SidebarContent>

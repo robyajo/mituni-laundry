@@ -1,24 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
-const apiUrl = `${API_URL}/api/perfume`;
-export const usePerfumeData = () => {
+const apiUrl = `${API_URL}/api/item-dry`;
+export const useDryData = () => {
+  const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["perfume"],
+      queryKey: ["dry"],
       queryFn: async () => {
         const response = await axios.post(
           apiUrl,
           {
-            branch_id: session?.data?.outlet_id_active,
+            branch_id: outlet_id_active,
           },
           {
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json",
               "x-mituni-key": `${MITUNI_API_KEY}`,
               Authorization: `Bearer ${session?.accessToken}`,
             },
@@ -26,18 +27,19 @@ export const usePerfumeData = () => {
         );
         return response.data;
       },
-      enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+      enabled: !!session?.accessToken && !!outlet_id_active,
     });
   };
-export const usePerfumeDataById = (id: string | number) => {
+export const useDryDataById = (id: string | number) => {
+    const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["perfume-id", id],
+      queryKey: ["dry-id", id],
       queryFn: async () => {
         const response = await axios.post(
           apiUrl ,
           {
-            branch_id: session?.data?.outlet_id_active,
+            branch_id: outlet_id_active,
             id: id,
           },
           {
@@ -51,18 +53,19 @@ export const usePerfumeDataById = (id: string | number) => {
         );
         return response.data;
       },
-      enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+      enabled: !!session?.accessToken && !!outlet_id_active,
     });
   };
-export const usePerfumeDeleteDataById = (id: string | number) => {
+export const useDryDeleteDataById = (id: string | number) => {
+    const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["perfume-delete-id", id],
+      queryKey: ["dry-delete-id", id],
       queryFn: async () => {
         const response = await axios.post(
           apiUrl + "/delete" ,
           {
-            branch_id: session?.data?.outlet_id_active,
+            branch_id: outlet_id_active,
             id: id,
           },
           {
@@ -76,6 +79,6 @@ export const usePerfumeDeleteDataById = (id: string | number) => {
         );
         return response.data;
       },
-      enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+      enabled: !!session?.accessToken && !!outlet_id_active,
     });
   };

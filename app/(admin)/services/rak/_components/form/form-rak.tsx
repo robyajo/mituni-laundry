@@ -30,6 +30,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircleIcon } from "lucide-react";
 import DebugForm from "@/components/debug-form";
 import { id } from "zod/v4/locales";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
 interface FormRakProps {
   refetch: () => void;
@@ -50,6 +51,7 @@ export default function FormRak({
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
   const { data: session } = useSession();
+  const { outlet_id_active } = useActiveOutlet();
 
   const form = useForm<SchemaRak & { id?: string | number }>({
     resolver: zodResolver(schemaRak),
@@ -76,8 +78,8 @@ export default function FormRak({
       if (data.id) {
         formData.append("id", String(data.id));
       }
-      if (session?.data?.outlet_id_active) {
-        formData.append("branch_id", String(session.data.outlet_id_active));
+      if (outlet_id_active) {
+        formData.append("branch_id", String(outlet_id_active));
       }
 
       const result = await axios.post(

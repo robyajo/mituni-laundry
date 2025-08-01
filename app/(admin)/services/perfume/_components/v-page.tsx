@@ -68,6 +68,7 @@ export default function ViewPagePerfume() {
             refetch={refetchInfo}
             onSuccess={handleSuccess}
             initialData={currentPerfume || undefined}
+            mode={currentPerfume ? "update" : "store"}
           />
         </DialogContent>
       </Dialog>

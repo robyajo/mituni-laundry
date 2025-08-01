@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
 const apiUrl = `${API_URL}/api/rack`;
 export const useRakData = () => {
+  const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
       queryKey: ["rack"],
@@ -13,7 +15,7 @@ export const useRakData = () => {
         const response = await axios.post(
           apiUrl,
           {
-            branch_id: session?.data?.outlet_id_active,
+            branch_id: outlet_id_active,
           },
           {
             headers: {
@@ -25,10 +27,11 @@ export const useRakData = () => {
         );
         return response.data;
       },
-      enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+      enabled: !!session?.accessToken && !!outlet_id_active,
     });
   };
 export const useRakDataById = (id: string | number) => {
+    const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
       queryKey: ["rack-id", id],
@@ -36,7 +39,7 @@ export const useRakDataById = (id: string | number) => {
         const response = await axios.post(
           apiUrl ,
           {
-            branch_id: session?.data?.outlet_id_active,
+            branch_id: outlet_id_active,
             id: id,
           },
           {
@@ -50,10 +53,11 @@ export const useRakDataById = (id: string | number) => {
         );
         return response.data;
       },
-      enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+      enabled: !!session?.accessToken && !!outlet_id_active,
     });
   };
 export const useRakDeleteDataById = (id: string | number) => {
+    const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
       queryKey: ["rack-delete-id", id],
@@ -61,7 +65,7 @@ export const useRakDeleteDataById = (id: string | number) => {
         const response = await axios.post(
           apiUrl + "/delete" ,
           {
-            branch_id: session?.data?.outlet_id_active,
+            branch_id: outlet_id_active,
             id: id,
           },
           {
@@ -75,6 +79,6 @@ export const useRakDeleteDataById = (id: string | number) => {
         );
         return response.data;
       },
-      enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+      enabled: !!session?.accessToken && !!outlet_id_active,
     });
   };

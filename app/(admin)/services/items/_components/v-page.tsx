@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import FormServices from "./form/form-services";
+import { useActiveOutlet } from "@/store/useOutletStore";
 
 // Pastikan variabel ENV sudah di-setup di .env.local
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -29,6 +30,7 @@ export default function ViewPageServices() {
   const [currentService, setCurrentService] = React.useState<any>(null);
   const { data: session } = useSession();
   const queryClient = useQueryClient();
+  const { outlet_id_active } = useActiveOutlet();
   const apiUrl = `${API_URL}/api/services`;
   const {
     data: apiResponse,
@@ -42,7 +44,7 @@ export default function ViewPageServices() {
       const response = await axios.post(
         apiUrl,
         {
-          branch_id: session?.data?.outlet_id_active,
+          branch_id: outlet_id_active,
         },
         {
           headers: {
@@ -55,7 +57,7 @@ export default function ViewPageServices() {
       );
       return response.data;
     },
-    enabled: !!session?.accessToken && !!session?.data?.outlet_id_active,
+    enabled: !!session?.accessToken && !!outlet_id_active,
   });
 
   const handleEdit = (service: any) => {

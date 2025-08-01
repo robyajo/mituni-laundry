@@ -20,9 +20,9 @@ import { useQueryClient, InvalidateQueryFilters } from "@tanstack/react-query";
 import AlertDelete from "@/components/modal/alert-delete";
 import { useActiveOutlet } from "@/store/useOutletStore";
 
-type Rak = {
+type Dry = {
   id: string | number;
-  rack_name: string;
+  name_item: string;
   [key: string]: any;
 };
 
@@ -31,7 +31,7 @@ interface CellComponentProps<TData> {
   onEdit?: (data: TData) => void;
 }
 
-export function CellComponent<TData extends Rak>({
+export function CellComponent<TData extends Dry>({
   row,
   onEdit,
 }: CellComponentProps<TData>) {
@@ -59,7 +59,7 @@ export function CellComponent<TData extends Rak>({
     setIsDeleting(true);
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/rack/delete`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/item-dry/delete`,
         {
           id: row.original.id,
           branch_id: outlet_id_active,
@@ -72,11 +72,11 @@ export function CellComponent<TData extends Rak>({
         }
       );
 
-      toast.success("Rak berhasil dihapus");
-      queryClient.invalidateQueries(["racks"] as InvalidateQueryFilters);
+      toast.success("Dry berhasil dihapus");
+      queryClient.invalidateQueries(["dry"] as InvalidateQueryFilters);
     } catch (error) {
-      // console.error("Error deleting rack:", error);
-      toast.error("Gagal menghapus rak");
+      // console.error("Error deleting dry:", error);
+      toast.error("Gagal menghapus dry");
     } finally {
       setIsDeleting(false);
       setIsDialogOpenDelete(false);
@@ -117,14 +117,14 @@ export function CellComponent<TData extends Rak>({
         data={row.original}
         isDeleting={isDeleting}
         handleDelete={handleDelete}
-        title={`Data Rak ${row.original.rack_name}`}
+        title={`Data Dry ${row.original.name_item}`}
       />
     </div>
   );
 }
 
 // Mendefinisikan kolom-kolom tabel
-export const columns: ColumnDef<Rak>[] = [
+export const columns: ColumnDef<Dry>[] = [
   {
     id: "no_urut",
     header: "No",
@@ -133,15 +133,15 @@ export const columns: ColumnDef<Rak>[] = [
     },
   },
   {
-    accessorKey: "rack_name",
+    accessorKey: "name_item",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nama Rak" />
+      <DataTableColumnHeader column={column} title="Nama Dry" />
     ),
   },
   {
     id: "actions",
     cell: ({ row }) => (
-      <CellComponent row={row} onEdit={(rak) => row.original.onEdit?.(rak)} />
+      <CellComponent row={row} onEdit={(dry) => row.original.onEdit?.(dry)} />
     ),
   },
 ];
