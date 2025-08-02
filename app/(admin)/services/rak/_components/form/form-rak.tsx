@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon } from "lucide-react";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
 import DebugForm from "@/components/debug-form";
 import { id } from "zod/v4/locales";
 import { useActiveOutlet } from "@/store/useOutletStore";
@@ -154,7 +154,7 @@ export default function FormRak({
             )}
           />
         </div>
-        <DebugForm
+        {/* <DebugForm
           form={form}
           mode={mode}
           extraInfo={{
@@ -163,10 +163,16 @@ export default function FormRak({
             isValid: form.formState.isValid,
             errors: form.formState.errors,
           }}
-        />
+        /> */}
         <DialogFooter>
           <Button type="submit" disabled={isLoading}>
-            Simpan
+            {isLoading && (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            )}
+            {!isLoading && (mode === "update" ? "Update" : "Simpan")}
           </Button>
         </DialogFooter>
       </form>

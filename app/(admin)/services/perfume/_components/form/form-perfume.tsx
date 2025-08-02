@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon } from "lucide-react";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
 import { useActiveOutlet } from "@/store/useOutletStore";
 
 interface FormPerfumeProps {
@@ -154,7 +154,13 @@ export default function FormPerfume({
         </div>
         <DialogFooter>
           <Button type="submit" disabled={isLoading}>
-            Simpan
+            {isLoading && (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            )}
+            {!isLoading && (mode === "update" ? "Update" : "Simpan")}
           </Button>
         </DialogFooter>
       </form>

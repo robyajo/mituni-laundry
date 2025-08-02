@@ -11,6 +11,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { useState } from "react";
 import axios from "@/lib/axios";
@@ -19,16 +25,14 @@ import { toast } from "sonner";
 import { useQueryClient, InvalidateQueryFilters } from "@tanstack/react-query";
 import AlertDelete from "@/components/modal/alert-delete";
 import { useActiveOutlet } from "@/store/useOutletStore";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-type Dry = {
+type Customer = {
   id: string | number;
-  name_item: string;
+  name: string;
+  gender: string;
+  phone_number: string;
+  email: string;
+  address: string;
   [key: string]: any;
 };
 
@@ -37,7 +41,7 @@ interface CellComponentProps<TData> {
   onEdit?: (data: TData) => void;
 }
 
-export function CellComponent<TData extends Dry>({
+export function CellComponent<TData extends Customer>({
   row,
   onEdit,
 }: CellComponentProps<TData>) {
@@ -65,7 +69,7 @@ export function CellComponent<TData extends Dry>({
     setIsDeleting(true);
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/item-dry/delete`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/customers/delete`,
         {
           id: row.original.id,
           branch_id: outlet_id_active,
@@ -78,11 +82,11 @@ export function CellComponent<TData extends Dry>({
         }
       );
 
-      toast.success("Dry berhasil dihapus");
-      queryClient.invalidateQueries(["dry"] as InvalidateQueryFilters);
+      toast.success(" Pelanggan berhasil dihapus");
+      queryClient.invalidateQueries(["customers"] as InvalidateQueryFilters);
     } catch (error) {
-      // console.error("Error deleting dry:", error);
-      toast.error("Gagal menghapus dry");
+      // console.error("Error deleting rack:", error);
+      toast.error("Gagal menghapus pelanggan");
     } finally {
       setIsDeleting(false);
       setIsDialogOpenDelete(false);
@@ -133,14 +137,14 @@ export function CellComponent<TData extends Dry>({
         data={row.original}
         isDeleting={isDeleting}
         handleDelete={handleDelete}
-        title={`Data Dry ${row.original.name_item}`}
+        title={`Data Pelanggan ${row.original.name}`}
       />
     </div>
   );
 }
 
 // Mendefinisikan kolom-kolom tabel
-export const columns: ColumnDef<Dry>[] = [
+export const columns: ColumnDef<Customer>[] = [
   {
     id: "no_urut",
     header: "No",
@@ -149,15 +153,88 @@ export const columns: ColumnDef<Dry>[] = [
     },
   },
   {
-    accessorKey: "name_item",
+    accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nama Dry" />
+      <DataTableColumnHeader column={column} title="Nama Pelanggan" />
     ),
+  },
+  {
+    accessorKey: "gender",
+    header: "Jenis Kelamin",
+  },
+  {
+    accessorKey: "phone_number",
+    header: "No. Telepon",
+    cell: ({ row }) => {
+      const phoneNumber = row.getValue("phone_number") as string;
+      if (!phoneNumber) return null;
+
+      // Remove any non-digit characters and leading 62 if present
+      const cleanNumber = phoneNumber.replace(/\D/g, "").replace(/^62/, "");
+
+      let formattedNumber = "";
+
+      // Format based on number length
+      if (cleanNumber.startsWith("8")) {
+        // For numbers starting with 8 (after removing 62)
+        if (cleanNumber.length === 11) {
+          // Format: 812-3456-7890 for 11 digits
+          formattedNumber = cleanNumber.replace(
+            /(\d{3})(\d{4})(\d{4})/,
+            "$1-$2-$3"
+          );
+        } else if (cleanNumber.length === 12) {
+          // Format: 821-2345-6789 for 12 digits
+          formattedNumber = cleanNumber.replace(
+            /(\d{3})(\d{5})(\d{4})/,
+            "$1-$2-$3"
+          );
+        } else {
+          // Fallback for other lengths
+          formattedNumber = cleanNumber;
+        }
+      } else {
+        // For other numbers, use general formatting
+        formattedNumber = cleanNumber.replace(
+          /(\d{3})(\d{4})(\d{4,})/,
+          "$1-$2-$3"
+        );
+      }
+
+      return <div>{`+62 ${formattedNumber}`}</div>;
+    },
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "address",
+    header: "Alamat",
+    cell: ({ row }) => {
+      const address = row.getValue("address") as string;
+      if (!address) return null;
+
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap cursor-default">
+                {address}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[300px] break-words">
+              <p>{address}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
   },
   {
     id: "actions",
     cell: ({ row }) => (
-      <CellComponent row={row} onEdit={(dry) => row.original.onEdit?.(dry)} />
+      <CellComponent row={row} onEdit={(rak) => row.original.onEdit?.(rak)} />
     ),
   },
 ];

@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import axios from "@/lib/axios";
 import { useSession } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon, Loader2Icon } from "lucide-react";
+import { AlertCircleIcon, Loader2, Loader2Icon } from "lucide-react";
 import FileUploadWithPreview from "@/app/(admin)/_components/file-upload-with-preview";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServicesUnitData } from "../resource-api";
@@ -326,7 +326,7 @@ export default function FormServices({
           </FormItem>
         </div>
 
-        <DebugForm
+        {/* <DebugForm
           form={form}
           mode={mode}
           id={id || initialData?.id || ""}
@@ -344,20 +344,17 @@ export default function FormServices({
             errors: form.formState.errors,
             apiResponseUnit: apiResponseUnit?.data,
           }}
-        />
+        /> */}
 
         <DialogFooter>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? (
+            {isLoading && (
               <>
-                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Loading...
               </>
-            ) : mode === "store" ? (
-              "Simpan"
-            ) : (
-              "Update"
             )}
+            {!isLoading && (mode === "update" ? "Update" : "Simpan")}
           </Button>
         </DialogFooter>
       </form>

@@ -19,6 +19,12 @@ import { toast } from "sonner";
 import { useQueryClient, InvalidateQueryFilters } from "@tanstack/react-query";
 import AlertDelete from "@/components/modal/alert-delete";
 import { useActiveOutlet } from "@/store/useOutletStore";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Rak = {
   id: string | number;
@@ -85,31 +91,41 @@ export function CellComponent<TData extends Rak>({
 
   return (
     <div className="flex justify-end">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={handleEditClick}
-            className="cursor-pointer"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={handleDeleteClick}
-            className="cursor-pointer"
-          >
-            <Trash className="mr-2 h-4 w-4" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <TooltipProvider>
+        <DropdownMenu>
+          <Tooltip>
+            <DropdownMenuTrigger asChild>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Menu aksi</span>
+                </Button>
+              </TooltipTrigger>
+            </DropdownMenuTrigger>
+            <TooltipContent side="left">
+              <p>Menu Aksi</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={handleEditClick}
+              className="cursor-pointer"
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleDeleteClick}
+              className="cursor-pointer"
+            >
+              <Trash className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </TooltipProvider>
 
       <AlertDelete
         isOpen={isDialogOpenDelete}

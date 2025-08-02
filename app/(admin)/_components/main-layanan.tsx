@@ -16,15 +16,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+
 import Link from "next/link";
 import {
   Tooltip,
@@ -134,17 +127,17 @@ export function MainLayanan() {
         <CollapsibleMenu
           item={{
             title: "Pelanggan",
-            url: "/services/customer",
+            url: "/services/customers",
             icon: Users,
-            isActive: pathname === "/services/customer",
+            isActive: pathname === "/services/customers",
             items: [
               {
                 title: "List Pelanggan",
-                url: "/services/customer",
+                url: "/services/customers",
               },
               {
-                title: "Tambah Pelanggan",
-                url: "/services/customer/tambah",
+                title: "Rekap Data",
+                url: "/services/customers/rekap",
               },
             ],
           }}

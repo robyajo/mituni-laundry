@@ -28,6 +28,12 @@ import {
 } from "@/components/ui/dialog";
 import FormServices from "../form/form-services";
 import { useActiveOutlet } from "@/store/useOutletStore";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Service {
   id: string | number;
@@ -55,7 +61,8 @@ export const CellComponent = ({ row }: CellComponentProps<Service>) => {
   const { outlet_id_active } = useActiveOutlet();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
-  const handleEdit = () => {
+
+  const handleEditClick = () => {
     setIsDialogOpen(true);
   };
 
@@ -136,25 +143,41 @@ export const CellComponent = ({ row }: CellComponentProps<Service>) => {
         title={`Data Layanan ${row.original.name_service}`}
       />
       <div className="flex float-right px-4 ">
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-            <DropdownMenuItem onClick={handleEdit}>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDeleteClick}>
-              <Trash className="mr-2 h-4 w-4" />
-              Hapus
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <TooltipProvider>
+          <DropdownMenu>
+            <Tooltip>
+              <DropdownMenuTrigger asChild>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Menu aksi</span>
+                  </Button>
+                </TooltipTrigger>
+              </DropdownMenuTrigger>
+              <TooltipContent side="left">
+                <p>Menu Aksi</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={handleEditClick}
+                className="cursor-pointer"
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleDeleteClick}
+                className="cursor-pointer"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TooltipProvider>
       </div>
     </>
   );
