@@ -39,8 +39,9 @@ export default function ViewPageServices() {
     isFetching: isFetchingInfo,
     refetch: refetchInfo,
   } = useQuery<any>({
-    queryKey: ["services"],
+    queryKey: ["services", outlet_id_active], // Add outlet_id_active to queryKey
     queryFn: async () => {
+      if (!outlet_id_active) return null; // Early return if no outlet_id_active
       const response = await axios.post(
         apiUrl,
         {
@@ -58,7 +59,17 @@ export default function ViewPageServices() {
       return response.data;
     },
     enabled: !!session?.accessToken && !!outlet_id_active,
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
+    staleTime: 1000 * 60 * 5, // 5 minutes before data is considered stale
+    retry: 1, // Retry once if the request fails
   });
+
+  // Refetch data when outlet_id_active changes
+  React.useEffect(() => {
+    if (outlet_id_active) {
+      refetchInfo();
+    }
+  }, [outlet_id_active, refetchInfo]);
 
   const handleEdit = (service: any) => {
     setCurrentService(service);

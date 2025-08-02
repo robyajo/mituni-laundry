@@ -10,8 +10,9 @@ export const useRakData = () => {
   const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["rack"],
+      queryKey: ["rack", outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl,
           {
@@ -34,8 +35,9 @@ export const useRakDataById = (id: string | number) => {
     const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["rack-id", id],
+      queryKey: ["rack-id", id, outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl ,
           {
@@ -60,8 +62,9 @@ export const useRakDeleteDataById = (id: string | number) => {
     const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["rack-delete-id", id],
+      queryKey: ["rack-delete-id", id, outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl + "/delete" ,
           {

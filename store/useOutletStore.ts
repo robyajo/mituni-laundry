@@ -87,20 +87,17 @@ export const store = useOutletStore;
 
 // Hook for active outlet
 export const useActiveOutlet = () => {
-  // Use a ref to track if we're on the client
-  const isMounted = React.useRef(false);
-  
-  // Only access the store on the client side
-  const outlet_id_active = useOutletStore(state => isMounted.current ? state.outlet_id_active : null);
+  const [isMounted, setIsMounted] = React.useState(false);
+  const outlet_id_active = useOutletStore(state => state.outlet_id_active);
   const setActiveOutlet = useOutletStore(state => state.setActiveOutlet);
   
-  // Set isMounted to true after component mounts
   React.useEffect(() => {
-    isMounted.current = true;
+    setIsMounted(true);
   }, []);
-  
+
+  // Return null only on server-side or during initial client-side render
   return {
-    outlet_id_active,
+    outlet_id_active: isMounted ? outlet_id_active : null,
     setActiveOutlet
   };
 };

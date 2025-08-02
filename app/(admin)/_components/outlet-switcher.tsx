@@ -35,28 +35,52 @@ export function OutletSwitcher() {
   // Get active outlet and setter from the store
   const { outlet_id_active, setActiveOutlet } = useActiveOutlet();
 
-  // Fetch outlets data
-  const { data: apiResponse } = useQuery<any>({
-    queryKey: ["outlets"],
-    queryFn: async () => {
-      const response = await axios.get(apiUrl, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "x-mituni-key": `${MITUNI_API_KEY}`,
-          Authorization: `Bearer ${session?.accessToken}`,
-        },
-      });
+  // Define the outlet type
+  type Outlet = {
+    id: number | string;
+    name_brand: string;
+    address: string;
+    // Add other properties as needed
+  };
 
-      // Set first outlet as active if none is set
-      if (response.data?.data?.length > 0 && !outlet_id_active) {
-        setActiveOutlet(response.data.data[0].id.toString());
+  const [outlets, setOutlets] = React.useState<Outlet[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  // Fetch outlets data - only once on initial load
+  React.useEffect(() => {
+    const fetchOutlets = async () => {
+      if (!session?.accessToken) return;
+
+      try {
+        setIsLoading(true);
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-mituni-key": `${MITUNI_API_KEY}`,
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        });
+
+        const responseData = response.data;
+        setOutlets(responseData?.data || []);
+
+        // Set first outlet as active if none is set
+        if (responseData?.data?.length > 0 && !outlet_id_active) {
+          setActiveOutlet(responseData.data[0].id.toString());
+        }
+      } catch (error) {
+        console.error("Error fetching outlets:", error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      return response.data;
-    },
-    enabled: !!session?.accessToken,
-  });
+    fetchOutlets();
+  }, [session?.accessToken, outlet_id_active, setActiveOutlet]);
+
+  // For backward compatibility
+  const apiResponse = { data: outlets };
 
   // Find the currently active outlet
   const activeOutlet =

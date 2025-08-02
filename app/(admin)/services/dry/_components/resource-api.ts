@@ -10,8 +10,9 @@ export const useDryData = () => {
   const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["dry"],
+      queryKey: ["dry", outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl,
           {
@@ -34,8 +35,9 @@ export const useDryDataById = (id: string | number) => {
     const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["dry-id", id],
+      queryKey: ["dry-id", id, outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl ,
           {
@@ -60,8 +62,9 @@ export const useDryDeleteDataById = (id: string | number) => {
     const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
     return useQuery<any>({
-      queryKey: ["dry-delete-id", id],
+      queryKey: ["dry-delete-id", id, outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl + "/delete" ,
           {

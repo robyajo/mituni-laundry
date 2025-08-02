@@ -9,9 +9,11 @@ const apiUrl = `${API_URL}/api/perfume`;
 export const usePerfumeData = () => {
     const { outlet_id_active } = useActiveOutlet();
     const { data: session } = useSession();
+
     return useQuery<any>({
-      queryKey: ["perfume"],
+      queryKey: ["perfume", outlet_id_active],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl,
           {
@@ -37,6 +39,7 @@ export const usePerfumeDataById = (id: string | number) => {
     return useQuery<any>({
       queryKey: ["perfume-id", id],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl ,
           {
@@ -63,6 +66,7 @@ export const usePerfumeDeleteDataById = (id: string | number) => {
     return useQuery<any>({
       queryKey: ["perfume-delete-id", id],
       queryFn: async () => {
+        if (!outlet_id_active) return null;
         const response = await axios.post(
           apiUrl + "/delete" ,
           {
