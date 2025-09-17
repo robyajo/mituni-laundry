@@ -67,8 +67,10 @@ export default function PageConponentsAdmin({
           <ModeToggle />
         </div>
       </header>
+<div className="py-4">
 
       {children}
+</div>
     </>
   );
 }
