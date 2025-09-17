@@ -1,7 +1,7 @@
 import PageConponentsAdmin from "../_components/page-components";
 import { BreadcrumbType } from "@/types";
 import { Metadata } from "next";
-import ViewPageDashboard from "./_components/v-page";
+import ClientDashboard from "./client/c-dashboard";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -18,7 +18,7 @@ export default function Page() {
   return (
     <>
       <PageConponentsAdmin breadcrumb={breadcrumbs}>
-        <ViewPageDashboard />
+        <ClientDashboard />
       </PageConponentsAdmin>
     </>
   );

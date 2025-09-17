@@ -57,6 +57,7 @@ export default function HomeHeader() {
                 width={32}
                 height={32}
                 className="h-8 w-8"
+                priority
               />
             </div>
             <span className="text-xl font-bold ">
@@ -262,6 +263,7 @@ export default function HomeHeader() {
                         width={24}
                         height={24}
                         className="h-6 w-6"
+                        priority
                       />
                     </div>
                     <span className="text-lg font-bold text-primary">
@@ -285,13 +287,9 @@ export default function HomeHeader() {
                             href="#layanan"
                             className="flex items-center space-x-3 rounded-md p-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                           >
-                            <Image
-                              src="/assets/logo.png"
-                              alt="Logo"
-                              width={24}
-                              height={24}
-                              className="h-6 w-6"
-                            />
+                            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 p-1">
+                              <Shirt className="h-4 w-4 text-primary" />
+                            </div>
                             <div>
                               <div className="font-medium">Cuci Reguler</div>
                               <div className="text-xs text-muted-foreground">

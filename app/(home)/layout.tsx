@@ -1,5 +1,3 @@
-import { HomeFooter } from "./_components/home-footer";
-import HomeHeader from "./_components/home-header";
 
 export default function HomeLayout({
   children,
@@ -9,11 +7,9 @@ export default function HomeLayout({
   return (
     <>
       <div className="min-h-screen bg-background">
-        {/* Header */}
-        <HomeHeader />
+        {/* <HomeHeader /> */}
         {children}
-        {/* Footer */}
-        <HomeFooter />
+        {/* <HomeFooter /> */}
       </div>
     </>
   );
