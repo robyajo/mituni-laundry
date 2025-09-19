@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,16 @@ const LaundryCheckout = () => {
     },
   ]);
   const [paymentStatus, setPaymentStatus] = useState("lunas");
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // or a loading spinner
+  }
 
   // Mock data
   const products = [
@@ -128,20 +139,32 @@ const LaundryCheckout = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className={`min-h-screen p-6 `}>
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form Section */}
           <div className="lg:col-span-2 space-y-6">
             {/* Header */}
-            <div className="bg-white rounded-lg p-6">
+            <div
+              className={`${
+                theme === "dark" ? "bg-gray-800" : "bg-white"
+              } rounded-lg p-6`}
+            >
               <div className="flex items-center gap-3 mb-2">
                 <ShoppingCart className="w-6 h-6 text-blue-600" />
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1
+                  className={`text-2xl font-bold ${
+                    theme === "dark" ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   Form Penjualan
                 </h1>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
+              <div
+                className={`flex items-center gap-2 ${
+                  theme === "dark" ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
                 <Info className="w-4 h-4" />
                 <span className="text-sm">
                   Pilih Produk atau Jasa yang di Order.
@@ -196,10 +219,22 @@ const LaundryCheckout = () => {
                               <div className="text-sm text-gray-500">
                                 {product.id}
                               </div>
-                              <h3 className="font-semibold text-gray-900">
+                              <h3
+                                className={`font-semibold ${
+                                  theme === "dark"
+                                    ? "text-white"
+                                    : "text-gray-900"
+                                }`}
+                              >
                                 {product.name}
                               </h3>
-                              <p className="text-sm text-gray-600">
+                              <p
+                                className={`text-sm ${
+                                  theme === "dark"
+                                    ? "text-gray-300"
+                                    : "text-gray-600"
+                                }`}
+                              >
                                 Harga Modal:{" "}
                                 <span className="font-medium">
                                   Rp. {formatCurrency(product.price)}
@@ -209,8 +244,20 @@ const LaundryCheckout = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-gray-500">Stok</div>
-                          <div className="font-semibold">
+                          <div
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            Stok
+                          </div>
+                          <div
+                            className={`font-semibold ${
+                              theme === "dark" ? "text-white" : ""
+                            }`}
+                          >
                             {formatCurrency(product.stock)}
                           </div>
                         </div>
@@ -242,8 +289,22 @@ const LaundryCheckout = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-gray-500">Stok</div>
-                          <div className="font-semibold">{service.stock}</div>
+                          <div
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            Stok
+                          </div>
+                          <div
+                            className={`font-semibold ${
+                              theme === "dark" ? "text-white" : ""
+                            }`}
+                          >
+                            {service.stock}
+                          </div>
                         </div>
                       </div>
                     ))}
