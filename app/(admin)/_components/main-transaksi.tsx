@@ -42,7 +42,7 @@ export function MainTransaksi() {
                     : ""
                 }
               >
-                <Link href="/item-cucian">
+                <Link href="/transaction">
                   <ScanText />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Transaksi
@@ -55,7 +55,7 @@ export function MainTransaksi() {
         </SidebarMenuItem>
         <SidebarMenuItem
           className={
-            pathname === "/transaksi"
+            pathname === "/transaction"
               ? "active bg-sidebar-accent rounded-md text-foreground"
               : ""
           }
@@ -70,7 +70,7 @@ export function MainTransaksi() {
                     : ""
                 }
               >
-                <Link href="/item-cucian">
+                <Link href="/transaction">
                   <DatabaseBackup />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Data Transaksi

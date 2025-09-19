@@ -29,7 +29,8 @@ declare module "next-auth" {
     accessToken: string;
     refreshToken: string;
     expiresInSecond: number;
-    user?: { // Optional because we delete it
+    user?: {
+      // Optional because we delete it
       id: string | number;
       name: string;
       email: string;
@@ -54,7 +55,7 @@ declare module "next-auth" {
     created_at: string;
     updated_at: string;
     logo_branch: string | null;
-    outlet_id_active: string;  
+    outlet_id_active: string;
     accessToken: string;
     tokenType: string;
   }
@@ -62,7 +63,6 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
-    
     tokenType: string;
     accessToken: string;
     refreshToken: string;
@@ -115,22 +115,22 @@ export const authOptions: AuthOptions = {
                 "Content-Type": "application/json",
                 "x-mituni-key": process.env.NEXT_PUBLIC_MITUNI_API_KEY,
               },
+              timeout: 10000, // 10 detik
             }
           );
 
           if (res.headers["content-type"]?.includes("application/json")) {
             const response = res.data;
-            
+
             if (response.success === true && response.data?.user) {
               const outletId = response.data.outlet_id_active;
-             
+
               return {
                 ...response.data.user,
                 outlet_id_active: response.data.outlet_id_active,
                 accessToken: response.data.token,
                 tokenType: response.data.token_type ?? "Bearer",
               };
-            
             } else if (response.status === "error" && response.errors) {
               const errorMessage = response.errors.join(", ");
               throw new Error(`[${errorMessage}]`);
