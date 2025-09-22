@@ -37,12 +37,12 @@ export function MainTransaksi() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/transaksi"
+                  pathname === "/transaction/create"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }
               >
-                <Link href="/transaction">
+                <Link href="/transaction/create">
                   <ScanText />
                   <span className="group-data-[collapsible=icon]:hidden">
                     Transaksi
@@ -53,6 +53,7 @@ export function MainTransaksi() {
             <TooltipContent side="right">Transaksi</TooltipContent>
           </Tooltip>
         </SidebarMenuItem>
+
         <SidebarMenuItem
           className={
             pathname === "/transaction"
@@ -65,7 +66,7 @@ export function MainTransaksi() {
               <SidebarMenuButton
                 asChild
                 className={
-                  pathname === "/transaksi"
+                  pathname === "/transaction"
                     ? "active bg-sidebar-accent rounded-md text-foreground"
                     : ""
                 }

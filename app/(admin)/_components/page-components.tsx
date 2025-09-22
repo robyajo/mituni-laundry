@@ -1,5 +1,4 @@
 import React from "react";
-import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,14 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { BreadcrumbType } from "@/types";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+// import { Footer } from "./footer";
 
 export default function PageConponentsAdmin({
   children,
@@ -34,8 +26,7 @@ export default function PageConponentsAdmin({
 }) {
   return (
     <>
-   
-     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex h-15 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex h-15 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b">
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator
@@ -67,10 +58,8 @@ export default function PageConponentsAdmin({
           <ModeToggle />
         </div>
       </header>
-<div className="py-4">
-
-      {children}
-</div>
+      <div className="@container my-4">{children}</div>
+      {/* <Footer /> */}
     </>
   );
 }

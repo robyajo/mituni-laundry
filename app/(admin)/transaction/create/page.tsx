@@ -1,18 +1,19 @@
 import { BreadcrumbType } from "@/types";
 import { Metadata } from "next";
-import PageConponentsAdmin from "../_components/page-components";
-import ViewPageTransaction from "./client/c-transaction";
+
+import LaundryCheckout from "./client/c-create-transaction";
+import PageConponentsAdmin from "../../_components/page-components";
 
 export const metadata: Metadata = {
-  title: "Transaksi",
-  description: "Transaksi",
+  title: "Buat Transaksi",
+  description: "Buat Transaksi",
 };
 
 export default async function Page() {
   const breadcrumbs: BreadcrumbType[] = [
     {
-      label: "Transaksi",
-      href: "/transaction",
+      label: "Buat Transaksi",
+      href: "/transaction/create",
       isCurrent: true,
     },
   ];
@@ -20,7 +21,7 @@ export default async function Page() {
     <>
       <PageConponentsAdmin breadcrumb={breadcrumbs}>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <ViewPageTransaction />
+          <LaundryCheckout />
         </div>
       </PageConponentsAdmin>
     </>
