@@ -6,85 +6,91 @@ import { useActiveOutlet } from "@/store/useOutletStore";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const MITUNI_API_KEY = process.env.NEXT_PUBLIC_MITUNI_API_KEY;
 const apiUrl = `${API_URL}/api/transactions`;
-export const useTransactionData = (page: number,
-    per_page: number,) => {
+export const useTransactionData = (
+  page: number,
+  per_page: number,
+  status?: string,
+  search?: string
+) => {
   const { outlet_id_active } = useActiveOutlet();
-    const { data: session } = useSession();
-    return useQuery<any>({
-      queryKey: ["transaction", outlet_id_active],
-      queryFn: async () => {
-        if (!outlet_id_active) return null;
-        const response = await axios.post(
-          apiUrl,
-          {
-            branch_id: outlet_id_active,
-            page: page,
-            per_page: per_page,
+  const { data: session } = useSession();
+  return useQuery<any>({
+    queryKey: ["transaction", outlet_id_active, page, per_page, status, search],
+    queryFn: async () => {
+      if (!outlet_id_active) return null;
+      const response = await axios.post(
+        apiUrl,
+        {
+          branch_id: outlet_id_active,
+          page: page,
+          per_page: per_page,
+          status: status || "",
+          search: search || "",
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "x-mituni-key": `${MITUNI_API_KEY}`,
+            Authorization: `Bearer ${session?.accessToken}`,
           },
-          {
-            headers: {
-              Accept: "application/json",
-              "x-mituni-key": `${MITUNI_API_KEY}`,
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
-        );
-        return response.data;
-      },
-      enabled: !!session?.accessToken && !!outlet_id_active,
-    });
-  };
+        }
+      );
+      return response.data;
+    },
+    enabled: !!session?.accessToken && !!outlet_id_active,
+  });
+};
 export const useTransactionDataById = (id: string | number) => {
-    const { outlet_id_active } = useActiveOutlet();
-    const { data: session } = useSession();
-    return useQuery<any>({
-      queryKey: ["transaction-id", id, outlet_id_active],
-      queryFn: async () => {
-        if (!outlet_id_active) return null;
-        const response = await axios.post(
-          apiUrl ,
-          {
-            branch_id: outlet_id_active,
-            id: id,
+  const { outlet_id_active } = useActiveOutlet();
+  const { data: session } = useSession();
+  return useQuery<any>({
+    queryKey: ["transaction-id", id, outlet_id_active],
+    queryFn: async () => {
+      if (!outlet_id_active) return null;
+      const response = await axios.post(
+        apiUrl,
+        {
+          branch_id: outlet_id_active,
+          id: id,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-mituni-key": `${MITUNI_API_KEY}`,
+            Authorization: `Bearer ${session?.accessToken}`,
           },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "x-mituni-key": `${MITUNI_API_KEY}`,
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
-        );
-        return response.data.data;
-      },
-      enabled: !!session?.accessToken && !!outlet_id_active,
-    });
-  };
+        }
+      );
+      return response.data.data;
+    },
+    enabled: !!session?.accessToken && !!outlet_id_active,
+  });
+};
 export const useCustomerDeleteDataById = (id: string | number) => {
-    const { outlet_id_active } = useActiveOutlet();
-    const { data: session } = useSession();
-    return useQuery<any>({
-      queryKey: ["customer-delete-id", id, outlet_id_active],
-      queryFn: async () => {
-        if (!outlet_id_active) return null;
-        const response = await axios.post(
-          apiUrl + "/delete" ,
-          {
-            branch_id: outlet_id_active,
-            id: id,
+  const { outlet_id_active } = useActiveOutlet();
+  const { data: session } = useSession();
+  return useQuery<any>({
+    queryKey: ["customer-delete-id", id, outlet_id_active],
+    queryFn: async () => {
+      if (!outlet_id_active) return null;
+      const response = await axios.post(
+        apiUrl + "/delete",
+        {
+          branch_id: outlet_id_active,
+          id: id,
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "x-mituni-key": `${MITUNI_API_KEY}`,
+            Authorization: `Bearer ${session?.accessToken}`,
           },
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "x-mituni-key": `${MITUNI_API_KEY}`,
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
-        );
-        return response.data;
-      },
-      enabled: !!session?.accessToken && !!outlet_id_active,
-    });
-  };
+        }
+      );
+      return response.data;
+    },
+    enabled: !!session?.accessToken && !!outlet_id_active,
+  });
+};

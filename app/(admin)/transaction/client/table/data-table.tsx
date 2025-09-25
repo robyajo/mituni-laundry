@@ -401,7 +401,7 @@ export function DataTable<TData, TValue>({
                   </th>
                 ))}
               </tr>
-              <tr className="sticky top-[41px] z-20">
+              {/* <tr className="sticky top-[41px] z-20">
                 {table.getHeaderGroups()[0].headers.map((header) => (
                   <th
                     key={`filter-${header.id}`}
@@ -437,7 +437,7 @@ export function DataTable<TData, TValue>({
                     )}
                   </th>
                 ))}
-              </tr>
+              </tr> */}
             </thead>
 
             <tbody>

@@ -1,0 +1,163 @@
+# Penjelasan Middleware Next.js dengan NextAuth dan Arcjet
+
+Kode ini menggabungkan Next.js Middleware, NextAuth, dan Arcjet untuk melindungi aplikasi Anda. 
+
+---
+
+## 1. Import Modules
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { withAuth, NextRequestWithAuth } from "next-auth/middleware";
+import arcjet, { shield, detectBot, slidingWindow } from "@arcjet/next";
+```
+
+- NextRequest & NextResponse → API dari Next.js untuk meng-handle request/response di middleware.
+- withAuth & NextRequestWithAuth → Middleware dari NextAuth untuk menambahkan autentikasi ke request.
+- arcjet → Library Arcjet untuk proteksi keamanan (anti-bot, rate-limiting, shielding).
+- shield → Melindungi request dari serangan umum.
+- detectBot → Mendeteksi dan memblokir bot.
+- slidingWindow → Rate limiter berbasis window (misalnya 100 request per menit).
+
+---
+
+## 2. Inisialisasi Arcjet
+```ts
+const aj = arcjet({
+  key: process.env.ARCJET_KEY!,
+  rules: [
+    shield({ mode: "LIVE" }),
+    detectBot({ mode: "LIVE", allow: [] }),
+    slidingWindow({ mode: "LIVE", interval: 60, max: 100 }),
+  ],
+});
+```
+
+- key → API key Arcjet (disimpan di environment variable).
+- rules → Kumpulan proteksi yang digunakan:
+  - shield → Melindungi dari request berbahaya.
+  - detectBot → Deteksi bot (default block semua bot).
+  - slidingWindow → Batasi 100 request per 60 detik.
+
+mode: "LIVE" artinya aturan benar-benar aktif (bukan hanya monitoring).
+
+---
+
+## 3. Middleware Arcjet
+```ts
+async function arcjetMiddleware(request: NextRequest) {
+  const decision = await aj.protect(request);
+
+  if (decision.isDenied()) {
+    console.log("Arcjet blocked request:", decision.reason);
+
+    if (decision.reason.isRateLimit()) {
+      return NextResponse.json({ error: "Too Many Requests" }, { status: 429 });
+    } else if (decision.reason.isBot()) {
+      return NextResponse.json({ error: "Bot Detected" }, { status: 403 });
+    } else {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
+
+  return null; // Continue to next middleware
+}
+```
+
+- aj.protect(request) → Mengevaluasi apakah request boleh lewat atau diblokir.
+- Jika request ditolak:
+  - Rate limit → 429 Too Many Requests
+  - Bot terdeteksi → 403 Bot Detected
+  - Lainnya (umum) → 403 Forbidden
+- Jika request aman → return null agar lanjut ke middleware berikutnya.
+
+---
+
+## 4. Middleware Utama dengan NextAuth
+```ts
+export default withAuth(
+  async function middleware(request: NextRequestWithAuth) {
+    // Arcjet check
+    const arcjetResponse = await arcjetMiddleware(request);
+    if (arcjetResponse) return arcjetResponse;
+
+    const token = request.nextauth.token;
+    const path = request.nextUrl.pathname;
+
+    // Jika belum login → redirect ke /login
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    // Proteksi akses ke dashboard (hanya user yang login)
+    if (path.startsWith("/dashboard")) {
+      if (!token.user) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
+
+    // Proteksi akses ke /users (hanya Admin / Super Admin)
+    if (path.startsWith("/users")) {
+      if (
+        token.user?.role !== "Admin" &&
+        token.user?.role !== "Super Admin"
+      ) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    }
+
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => {
+        // Kalau tidak ada token, unauthorized
+        if (!token) return false;
+
+        // Selama ada token, authorized (role check dilakukan di atas)
+        return !!token;
+      },
+    },
+  }
+);
+```
+
+### Alur Middleware:
+1. Cek Arcjet → blokir jika bot / rate limit / serangan.
+2. Cek token NextAuth:
+   - Jika tidak ada token → redirect ke /login.
+3. Role-based access control:
+   - /dashboard/* → hanya untuk user login.
+   - /users/* → hanya Admin atau Super Admin.
+
+Jika semua lolos → lanjutkan request (NextResponse.next()).
+
+---
+
+## 5. Konfigurasi Middleware
+```ts
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+    "/users/:path*",
+    "/api/:path*", // Protect API routes dengan Arcjet
+  ],
+};
+```
+
+- Middleware hanya akan jalan untuk path:
+  - /dashboard/*
+  - /users/*
+  - /api/*
+
+---
+
+## 6. Ringkasan
+Middleware ini melakukan 3 lapisan proteksi:
+1. Arcjet Security → blok bot, rate limiting, proteksi dasar.
+2. NextAuth Authentication → pastikan user login.
+3. Role-based Authorization → pastikan role sesuai untuk akses halaman tertentu.
+
+Dengan ini:
+- API aman dari spam & bot.
+- User harus login untuk akses halaman.
+- Admin/super admin punya kontrol lebih (akses /users).
