@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -30,23 +31,45 @@ interface DataTablePaginationProps<TData> {
 
 export function DataTablePagination<TData>({
   table,
-  pageSizeOptions = [10, 20, 30, 40, 50],
+  pageSizeOptions = [10, 20, 30, 40, 50, 100],
   pageCount,
   pageIndex,
   pageSize,
   totalItems,
   onPaginationChange,
 }: DataTablePaginationProps<TData>) {
+  // Ensure pageCount is at least 1
+  const safePageCount = Math.max(1, pageCount);
+  const isLastPage = pageIndex >= safePageCount - 1;
+  const isFirstPage = pageIndex <= 0;
+
+  // Calculate showing range - ensure we don't show more than totalItems
+  const startItem = totalItems > 0 ? Math.min(pageIndex * pageSize + 1, totalItems) : 0;
+  const endItem = Math.min((pageIndex + 1) * pageSize, totalItems);
+  
+  // Calculate safe page index without triggering state updates
+  const safePageIndex = Math.min(Math.max(0, pageIndex), safePageCount - 1);
+  
+  // Use effect to handle page index validation
+  React.useEffect(() => {
+    if (pageIndex !== safePageIndex) {
+      // If current page is invalid, update to the closest valid page
+      onPaginationChange({ pageIndex: safePageIndex, pageSize });
+    }
+  }, [pageIndex, safePageIndex, pageSize, onPaginationChange]);
+
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
       <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
-        Showing {pageIndex * pageSize + 1} to{" "}
-        {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}{" "}
-        entries
+        {totalItems > 0
+          ? `Menampilkan ${startItem} sampai ${endItem} dari ${totalItems} data`
+          : "Tidak ada data yang tersedia"}
       </div>
       <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
         <div className="flex items-center space-x-2">
-          <p className="whitespace-nowrap text-sm font-medium">Rows per page</p>
+          <p className="whitespace-nowrap text-sm font-medium">
+            Baris per halaman
+          </p>
           <Select
             value={`${pageSize}`}
             onValueChange={(value) => {
@@ -66,57 +89,68 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
-          Page {pageIndex + 1} of {pageCount}
+          Halaman {pageIndex + 1} dari {safePageCount}
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            aria-label="Go to first page"
+            aria-label="Ke halaman pertama"
             variant="outline"
             className="hidden size-8 p-0 lg:flex"
             onClick={() => onPaginationChange({ pageIndex: 0, pageSize })}
-            disabled={pageIndex === 0}
+            disabled={isFirstPage}
           >
             <DoubleArrowLeftIcon className="size-4" aria-hidden="true" />
           </Button>
           <Button
-            aria-label="Go to previous page"
+            aria-label="Halaman sebelumnya"
             variant="outline"
             size="icon"
             className="size-8"
-            onClick={() =>
-              onPaginationChange({
-                pageIndex: Math.max(0, pageIndex - 1),
-                pageSize,
-              })
-            }
-            disabled={pageIndex === 0}
+            onClick={() => {
+              const newPageIndex = Math.max(0, pageIndex - 1);
+              if (newPageIndex !== pageIndex) {
+                onPaginationChange({
+                  pageIndex: newPageIndex,
+                  pageSize,
+                });
+              }
+            }}
+            disabled={isFirstPage}
           >
             <ChevronLeftIcon className="size-4" aria-hidden="true" />
           </Button>
+          
           <Button
-            aria-label="Go to next page"
+            aria-label="Halaman selanjutnya"
             variant="outline"
             size="icon"
             className="size-8"
-            onClick={() =>
-              onPaginationChange({
-                pageIndex: Math.min(pageCount - 1, pageIndex + 1),
-                pageSize,
-              })
-            }
-            disabled={pageIndex >= pageCount - 1}
+            onClick={() => {
+              const newPageIndex = Math.min(pageIndex + 1, safePageCount - 1);
+              if (newPageIndex !== pageIndex) {
+                onPaginationChange({
+                  pageIndex: newPageIndex,
+                  pageSize,
+                });
+              }
+            }}
+            disabled={isLastPage}
           >
             <ChevronRightIcon className="size-4" aria-hidden="true" />
           </Button>
+          
           <Button
-            aria-label="Go to last page"
+            aria-label="Ke halaman terakhir"
             variant="outline"
             size="icon"
             className="hidden size-8 lg:flex"
-            onClick={() =>
-              onPaginationChange({ pageIndex: pageCount - 1, pageSize })
-            }
-            disabled={pageIndex >= pageCount - 1}
+            onClick={() => {
+              onPaginationChange({
+                pageIndex: safePageCount - 1,
+                pageSize,
+              });
+            }}
+            disabled={isLastPage}
           >
             <DoubleArrowRightIcon className="size-4" aria-hidden="true" />
           </Button>
