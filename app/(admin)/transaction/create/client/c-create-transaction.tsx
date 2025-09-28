@@ -382,12 +382,12 @@ const LaundryCheckout = () => {
                   </Button>
                   <Button
                     variant={
-                      paymentStatus === "belum-lunas" ? "default" : "outline"
+                      paymentStatus === "belum_lunas" ? "default" : "outline"
                     }
                     size="sm"
-                    onClick={() => setPaymentStatus("belum-lunas")}
+                    onClick={() => setPaymentStatus("belum_lunas")}
                     className={
-                      paymentStatus === "belum-lunas"
+                      paymentStatus === "belum_lunas"
                         ? "bg-gray-600 hover:bg-gray-700"
                         : ""
                     }
